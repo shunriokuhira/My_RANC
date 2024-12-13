@@ -70,6 +70,7 @@ module Core #(
     localparam CSRAM_THRESHOLD_BOTTOM_INDEX = CSRAM_LEAK_BOTTOM_INDEX - THRESHOLD_WIDTH;
     localparam CSRAM_FLOOR_BOTTOM_INDEX = CSRAM_THRESHOLD_BOTTOM_INDEX - THRESHOLD_WIDTH;
     localparam CSRAM_RESET_MODE_BOTTOM_INDEX = CSRAM_FLOOR_BOTTOM_INDEX - $clog2(NUM_RESET_MODES);
+    //↓使われてなさそう
     localparam CSRAM_DX_BOTTOM_INDEX = CSRAM_RESET_MODE_BOTTOM_INDEX - DX_WIDTH;
     localparam CSRAM_DY_BOTTOM_INDEX = CSRAM_DX_BOTTOM_INDEX - DY_WIDTH;
     localparam CSRAM_AXON_DESTINATION_BOTTOM_INDEX = CSRAM_DY_BOTTOM_INDEX - $clog2(NUM_AXONS);
@@ -107,12 +108,12 @@ Scheduler #(
 ) Scheduler (
     .clk(clk),
     .rst(rst),
-    .wen(scheduler_wen),
-    .set(scheduler_set),
-    .clr(scheduler_clr),
-    .packet(scheduler_packet),
-    .axon_spikes(axon_spikes),
-    .error(scheduler_error)
+    .wen(scheduler_wen),// router >> scheduler
+    .set(scheduler_set),// controller >> scheduler
+    .clr(scheduler_clr),// controller >> scheduler
+    .packet(scheduler_packet),// router >> scheduler
+    .axon_spikes(axon_spikes),//output scheduler >> controller
+    .error(scheduler_error)//output scheduler >> otherCore?
 );
 
 /* Addressing:
@@ -136,10 +137,10 @@ CSRAM #(
     .WRITE_WIDTH(POTENTIAL_WIDTH)
 ) CSRAM (
     .clk(clk),
-    .wen(CSRAM_write),  
+    .wen(CSRAM_write),  //from controller
     .address(CSRAM_addr),
     .data_in({CSRAM_data[CSRAM_WIDTH-1:CSRAM_SYNAPTIC_CONNECTIONS_BOTTOM_INDEX], neuron_potential, CSRAM_data[CSRAM_CURRENT_POTENTIAL_BOTTOM_INDEX-1:0]}),
-    .data_out(CSRAM_data)
+    .data_out(CSRAM_data)//output reg to CSRAM, controller, neuronblock, router
 );
 
 TokenController #(
@@ -152,19 +153,19 @@ TokenController #(
     .rst(rst),
     .tick(tick),
     .axon_spikes(axon_spikes), 
-    .synapses(CSRAM_data[CSRAM_SYNAPTIC_CONNECTIONS_BOTTOM_INDEX +: NUM_AXONS]), 
+    .synapses(CSRAM_data[CSRAM_SYNAPTIC_CONNECTIONS_BOTTOM_INDEX +: NUM_AXONS]), //from CSRAM
     .spike_in(neuron_block_spike),
     .local_buffers_full(local_buffers_full),
-    .error(token_controller_error),
-    .scheduler_set(scheduler_set), 
-    .scheduler_clr(scheduler_clr),
-    .CSRAM_write(CSRAM_write),
-    .CSRAM_addr(CSRAM_addr),
-    .neuron_instruction(neuron_instruction), 
-    .spike_out(router_spike),
-    .neuron_reg_en(neuron_block_en), 
-    .next_neuron(neuron_block_next_neuron),
-    .write_current_potential(neuron_block_write_current_potential)
+    .error(token_controller_error),//to outside
+    .scheduler_set(scheduler_set), //to scheduler
+    .scheduler_clr(scheduler_clr),//to scheduler
+    .CSRAM_write(CSRAM_write),//to CSRAM
+    .CSRAM_addr(CSRAM_addr),//to CSRAM
+    .neuron_instruction(neuron_instruction), //to neuronblock
+    .spike_out(router_spike),//to router
+    .neuron_reg_en(neuron_block_en), //to neuronblock
+    .next_neuron(neuron_block_next_neuron),// to neuronblock
+    .write_current_potential(neuron_block_write_current_potential)//to neuronblock
 );
 
 NeuronBlock #(
@@ -181,14 +182,14 @@ NeuronBlock #(
     .negative_threshold(CSRAM_data[CSRAM_FLOOR_BOTTOM_INDEX +: THRESHOLD_WIDTH]),
     .reset_potential(CSRAM_data[CSRAM_RESET_POTENTIAL_BOTTOM_INDEX +: POTENTIAL_WIDTH]),
     .current_potential(CSRAM_data[CSRAM_CURRENT_POTENTIAL_BOTTOM_INDEX +: POTENTIAL_WIDTH]),
-    .neuron_instruction(neuron_instruction),
+    .neuron_instruction(neuron_instruction),//from controller
     .reset_mode(CSRAM_data[CSRAM_RESET_MODE_BOTTOM_INDEX +: $clog2(NUM_RESET_MODES)]),
     .clk(clk),
-    .next_neuron(neuron_block_next_neuron),
-    .integrator_reg_en(neuron_block_en),
-    .write_current_potential(neuron_block_write_current_potential),
-    .write_potential(neuron_potential),
-    .spike_out(neuron_block_spike)
+    .next_neuron(neuron_block_next_neuron),//from controller
+    .integrator_reg_en(neuron_block_en),//from controller
+    .write_current_potential(neuron_block_write_current_potential),//from controller
+    .write_potential(neuron_potential),//to CSRAM
+    .spike_out(neuron_block_spike)//to controller
 );
 
 Router #(
@@ -202,34 +203,34 @@ Router #(
     .clk(clk),
     .rst(rst),
     .din_local(CSRAM_data[PACKET_WIDTH-1:0]),
-    .din_local_wen(router_spike),
-    .din_west(west_in),
-    .din_east(east_in),
-    .din_north(north_in),
-    .din_south(south_in),
-    .ren_in_west(ren_in_west),
-    .ren_in_east(ren_in_east),
-    .ren_in_north(ren_in_north),
-    .ren_in_south(ren_in_south),
-    .empty_in_west(empty_in_west),
-    .empty_in_east(empty_in_east),
-    .empty_in_north(empty_in_north),
-    .empty_in_south(empty_in_south),
-    .dout_west(west_out),
-    .dout_east(east_out),
-    .dout_north(north_out),
-    .dout_south(south_out),
-    .dout_local(scheduler_packet),
-    .dout_wen_local(scheduler_wen),
-    .ren_out_west(ren_out_west),
-    .ren_out_east(ren_out_east),
-    .ren_out_north(ren_out_north),
-    .ren_out_south(ren_out_south),
-    .empty_out_west(empty_out_west),
-    .empty_out_east(empty_out_east),
-    .empty_out_north(empty_out_north),
-    .empty_out_south(empty_out_south),
-    .local_buffers_full(local_buffers_full)
+    .din_local_wen(router_spike),//from controller
+    .din_west(west_in),//from outside
+    .din_east(east_in),//from outside
+    .din_north(north_in),//from outside
+    .din_south(south_in),//from outside
+    .ren_in_west(ren_in_west),//from outside
+    .ren_in_east(ren_in_east),//from outside
+    .ren_in_north(ren_in_north),//from outside
+    .ren_in_south(ren_in_south),//from outside
+    .empty_in_west(empty_in_west),//from outside
+    .empty_in_east(empty_in_east),//from outside
+    .empty_in_north(empty_in_north),//from outside
+    .empty_in_south(empty_in_south),//from outside
+    .dout_west(west_out),//to outside
+    .dout_east(east_out),//to outside
+    .dout_north(north_out),//to outside
+    .dout_south(south_out),//to outside
+    .dout_local(scheduler_packet),//to scheduler
+    .dout_wen_local(scheduler_wen),//to scheduler
+    .ren_out_west(ren_out_west),//to outside
+    .ren_out_east(ren_out_east),//to outside
+    .ren_out_north(ren_out_north),//to outside
+    .ren_out_south(ren_out_south),//to outside
+    .empty_out_west(empty_out_west),//to outside
+    .empty_out_east(empty_out_east),//to outside
+    .empty_out_north(empty_out_north),//to outside
+    .empty_out_south(empty_out_south),//to outside
+    .local_buffers_full(local_buffers_full)//to controller
 );
 
 endmodule

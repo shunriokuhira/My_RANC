@@ -18,11 +18,11 @@ module ThresholdResetUnit #(
     input signed [THRESHOLD_WIDTH-1:0] negative_threshold,
     input signed [POTENTIAL_WIDTH-1:0] reset_potential,
     input [$clog2(NUM_RESET_MODES)-1:0] reset_mode,
-    output signed [POTENTIAL_WIDTH-1:0] potential_out,
-    output spike
+    output signed [POTENTIAL_WIDTH-1:0] potential_out,//to CSRAM
+    output spike//to controller
 ); 
 
-    assign spike = potential_in >= positive_threshold;
+    assign spike = potential_in >= positive_threshold;//電位が閾値を上回ったらスパイク発射
 
     wire potential_in_lt_negative_threshold;
     assign potential_in_lt_negative_threshold = potential_in < negative_threshold;

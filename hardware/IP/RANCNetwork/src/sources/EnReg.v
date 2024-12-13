@@ -6,7 +6,7 @@
 // Created for Dr. Akoglu's Reconfigurable Computing Lab
 //  at the University of Arizona
 // 
-// Passes through a value at the positive edge of enable.
+// Passes through a value at the positive edge of enable.イネーブルのポジティブ・エッジの値を通過させる。
 //////////////////////////////////////////////////////////////////////////////////
 
 module EnReg #(

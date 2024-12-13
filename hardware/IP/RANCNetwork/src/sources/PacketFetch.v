@@ -7,6 +7,7 @@
 //  at the University of Arizona
 // 
 // Addresses into the AXIS FIFO to fetch packets to be sent into RANC.
+// RANCに送信するパケットをフェッチするために、AXIS FIFOにアドレスを入れる。
 //////////////////////////////////////////////////////////////////////////////////
 
 module PacketFetch #(

@@ -7,6 +7,7 @@
 //  at the University of Arizona
 // 
 // Holds the configuration parameters for the neurons for a core.
+// コアのニューロンのコンフィギュレーション・パラメーターを保持する。
 //////////////////////////////////////////////////////////////////////////////////
 
 module CSRAM #(

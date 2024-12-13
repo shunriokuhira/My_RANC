@@ -6,7 +6,7 @@
 // Created for Dr. Akoglu's Reconfigurable Computing Lab
 //  at the University of Arizona
 // 
-// Performs an integration operation.
+// Performs an integration operation. 統合(積分)操作を行う。
 //////////////////////////////////////////////////////////////////////////////////
 
 module IntegratorUnit #(
@@ -27,9 +27,9 @@ module IntegratorUnit #(
     Mux2to1 #(
         .DATA_WIDTH(POTENTIAL_WIDTH)
     ) PotentialMux (
-        .a(integrator_potential),
-        .b(current_potential),
-        .sel(next_neuron),
+        .a(integrator_potential),//next_neuron = 0
+        .b(current_potential),//next_neuron = 1 
+        .sel(next_neuron),//from controller
         .out(potential_mux_out)
     );
     
@@ -40,7 +40,7 @@ module IntegratorUnit #(
     ) Adder (
         .a(weight),
         .b(potential_mux_out),
-        .out(add_out)
+        .out(add_out)// weight + potential_mux_out
     );
     
     EnReg #(

@@ -15,6 +15,10 @@ module RANCNetwork #
     // RANC parameters
     parameter GRID_DIMENSION_X = 5,
     parameter GRID_DIMENSION_Y = 1,
+    // parameter DX_MSB = 29,
+    // parameter DX_LSB = 21,
+    // parameter DY_MSB = 20,
+    // parameter DY_LSB = 12,
     parameter MAX_DIMENSION_X = 512,
     parameter MAX_DIMENSION_Y = 512,
     parameter OUTPUT_CORE_X_COORDINATE = 4,
@@ -46,7 +50,7 @@ module RANCNetwork #
     output packet_read_error,
     output fifo_write_error,
 
-    // Ports of Axi Slave Bus Interface S00_AXIS
+    // Ports of Axi Slave Bus Interface S00_AXIS   Axi スレーブ・バス・インターフェースのポート S00_AXIS
     input wire  s00_axis_aclk,
     input wire  s00_axis_aresetn,
     output wire  s00_axis_tready,
@@ -57,6 +61,7 @@ module RANCNetwork #
 );
 
     // This assumes that the dx and dy components are the most significant bits of the packet
+    //これは、dx成分とdy成分がパケットの最上位ビットであると仮定している。
     localparam DX_MSB = $clog2(MAX_DIMENSION_X) + $clog2(MAX_DIMENSION_Y) + $clog2(NUM_AXONS) + $clog2(NUM_TICKS) - 1;
     localparam DX_LSB = $clog2(MAX_DIMENSION_Y) + $clog2(NUM_AXONS) + $clog2(NUM_TICKS);
     localparam DY_MSB = $clog2(MAX_DIMENSION_Y) + $clog2(NUM_AXONS) + $clog2(NUM_TICKS) - 1;
@@ -81,24 +86,24 @@ module RANCNetwork #
 
 	assign packet_axi_to_buffer = data[PACKET_WIDTH-1:0];
 	
-    // Instantiation of Axi Bus Interface S00_AXIS
+    // Instantiation of Axi Bus Interface S00_AXIS   AXIバスインターフェースであるS00_AXISのインスタンス化
 	RANCNetwork_S00_AXIS # ( 
 	    .NUMBER_OF_INPUT_WORDS(MAXIMUM_NUMBER_OF_PACKETS),
 		.C_S_AXIS_TDATA_WIDTH(C_S00_AXIS_TDATA_WIDTH)
 	) RANCNetwork_S00_AXIS_inst (
-	    .tick(tick),
-        .writes_done_out(writes_done),
-        .dout(data),
-        .addr(addr),
-        .num_packets(num_packets),
-        .fifo_write_error(fifo_write_error),
-		.S_AXIS_ACLK(s00_axis_aclk),
-		.S_AXIS_ARESETN(s00_axis_aresetn),
-		.S_AXIS_TREADY(s00_axis_tready),
-		.S_AXIS_TDATA(s00_axis_tdata),
-		.S_AXIS_TSTRB(s00_axis_tstrb),
-		.S_AXIS_TLAST(s00_axis_tlast),
-		.S_AXIS_TVALID(s00_axis_tvalid)
+	    .tick(tick),//input
+        .writes_done_out(writes_done),//output
+        .dout(data),//output
+        .addr(addr),//input
+        .num_packets(num_packets),//output
+        .fifo_write_error(fifo_write_error),//output
+		.S_AXIS_ACLK(s00_axis_aclk),//input
+		.S_AXIS_ARESETN(s00_axis_aresetn),//input
+		.S_AXIS_TREADY(s00_axis_tready),//output
+		.S_AXIS_TDATA(s00_axis_tdata),//input
+		.S_AXIS_TSTRB(s00_axis_tstrb),//input
+		.S_AXIS_TLAST(s00_axis_tlast),//input
+		.S_AXIS_TVALID(s00_axis_tvalid)//input
 	);
 	
 	PacketFetch #(
@@ -109,10 +114,10 @@ module RANCNetwork #
 	   .rst(rst),
 	   .num_packets(num_packets),
 	   .data_valid(s00_axis_tvalid & s00_axis_tready),
-	   .buffer_full(buffer_full), // FIXME: Replace this with the FULL signal from the buffer
-	   .addr(addr),
-	   .packet_valid(packet_axi_to_buffer_valid),
-	   .packet_read_error(packet_read_error)
+	   .buffer_full(buffer_full), // FIXME: Replace this with the FULL signal from the buffer 修正： これをバッファからのFULLシグナルに置き換える。
+	   .addr(addr),//output
+	   .packet_valid(packet_axi_to_buffer_valid),//output
+	   .packet_read_error(packet_read_error)//output
 	);
 	
 	/*
@@ -125,12 +130,12 @@ module RANCNetwork #
     ) buffer_inst (
         .clk(clk),
         .rst(rst),
-        .din(packet_axi_to_buffer),
+        .din(packet_axi_to_buffer),//RANCNetwork_S00_AXISモジュールから来たパケット
         .din_valid(packet_axi_to_buffer_valid),
         .read_en(ren_to_input_buffer),
-        .dout(packet_buffer_to_RANC),
-        .empty(buffer_empty),
-        .full(buffer_full)
+        .dout(packet_buffer_to_RANC),//output
+        .empty(buffer_empty),//output
+        .full(buffer_full)//output
     );
 
 	

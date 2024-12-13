@@ -7,6 +7,7 @@
 //  at the University of Arizona
 // 
 // Handles reads and writes to the SchedulerSRAM
+// スケジューラSRAMへの読み書きを処理する。
 //////////////////////////////////////////////////////////////////////////////////
 
 module Scheduler #(
@@ -15,11 +16,11 @@ module Scheduler #(
 )(
     input clk,
     input rst,
-    input wen,
-    input set,
+    input wen,//from router
+    input set,//from controller
     input clr,
-    input [$clog2(NUM_AXONS) + $clog2(NUM_TICKS) - 1:0] packet,
-    output [NUM_AXONS-1:0] axon_spikes,
+    input [$clog2(NUM_AXONS) + $clog2(NUM_TICKS) - 1:0] packet,//from router
+    output [NUM_AXONS-1:0] axon_spikes,//to controller
     output error
 );
     
@@ -49,7 +50,7 @@ module Scheduler #(
     ) counter (
         .wen(set),
         .clk(clk),
-        .out(read_address)
+        .out(read_address)//ここでread_addressは作られる。setに反応してインクリメント
     );
     
 endmodule

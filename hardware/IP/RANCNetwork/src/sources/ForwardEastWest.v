@@ -87,7 +87,7 @@ module ForwardEastWest #(
         .wen_c(south_buffer_wen)
     );
     
-    buffer #(
+    buffer #(//rooting_buffer
         .DATA_WIDTH(PACKET_WIDTH),
         .BUFFER_DEPTH(BUFFER_DEPTH)
     ) routing_buffer (
@@ -96,12 +96,12 @@ module ForwardEastWest #(
         .din(routing_buffer_in),
         .din_valid(routing_buffer_wen),
         .read_en(ren_in_routing),
-        .dout(dout_routing),
+        .dout(dout_routing),//西もしくは東へパケットを渡すポート
         .empty(routing_buffer_empty),
         .full(routing_buffer_full)
     );
     
-    buffer #(
+    buffer #(//north_buffer ??
         .DATA_WIDTH(PACKET_WIDTH-(DX_MSB-DY_MSB)),
         .BUFFER_DEPTH(BUFFER_DEPTH)
     ) north_buffer (
@@ -115,7 +115,7 @@ module ForwardEastWest #(
         .full(north_buffer_full)
     );
     
-    buffer #(
+    buffer #(//south_buffer ??
         .DATA_WIDTH(PACKET_WIDTH-(DX_MSB-DY_MSB)),
         .BUFFER_DEPTH(BUFFER_DEPTH)
     ) south_buffer (

@@ -37,10 +37,12 @@ module PathDecoder2Way#(
     wire [DY_MSB:DY_LSB] dy_plus_add;
     assign dy_plus_add = dy + ADD;
     
-    assign dout_a = DATA_WIDTH-1 == DY_MSB ? {dy_plus_add, din[DY_LSB-1:0]} : {din[DATA_WIDTH-1:DY_MSB+1], dy_plus_add, din[DY_LSB-1:0]};
+    //assign dout_a = DATA_WIDTH-1 == DY_MSB ? {dy_plus_add, din[DY_LSB-1:0]} : {din[DATA_WIDTH-1:DY_MSB+1], dy_plus_add, din[DY_LSB-1:0]};
+    assign dout_a = {dy_plus_add, din[DY_LSB-1:0]};
     assign wen_a = dy == 0 ? 0 : wen;
     
-    assign dout_b = DATA_WIDTH-1 == DY_MSB ? din[DY_LSB-1:0] : {din[DATA_WIDTH-1:DY_MSB+1], din[DY_LSB-1:0]};
+    //assign dout_b = DATA_WIDTH-1 == DY_MSB ? din[DY_LSB-1:0] : {din[DATA_WIDTH-1:DY_MSB+1], din[DY_LSB-1:0]};
+    assign dout_b = din[DY_LSB-1:0];
     assign wen_b = dy == 0 ? wen : 0;
 
 endmodule

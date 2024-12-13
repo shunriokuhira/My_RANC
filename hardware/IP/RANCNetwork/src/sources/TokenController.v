@@ -7,15 +7,16 @@
 // at the University of Arizona
 // 
 // Handles communication between the Scheduler, CSRAM and Neuron Block to facilitate all neuron computation.
-//
-// ABBREVIATIONS:
+//すべてのニューロン計算を容易にするために、スケジューラ、CSRAM、ニューロン・ブロック間の通信を処理する。
+
+// ABBREVIATIONS:(略語)
 // TC = Token Controller
 // NB = Neuron Block
 // SSRAM = Scheduler SRAM
 // CSRAM = Core SRAM
 //
 // NOTES:
-// ROW: A row refers to an AXON.
+// ROW: A row refers to an AXON.行はAXONを指す。
 // NEURON: A neuron refers to the DENDRITE / NEURON itself. If used in conjunction with a ROW then we mean the DENDRITE.
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -45,15 +46,16 @@ module TokenController #(
 );
 
 
-    reg [$clog2(NUM_WEIGHTS)-1:0] neuron_instructions [0:NUM_AXONS-1];  // Stores all neuron instructions
+    reg [$clog2(NUM_WEIGHTS)-1:0] neuron_instructions [0:NUM_AXONS-1];  // Stores all neuron instructions  すべてのニューロン命令を格納
     reg [3:0] state;                                                    // state of FSM
-    reg [$clog2(NUM_AXONS):0] row_count;                                // Stores the axon that we are currently analyzing
+    reg [$clog2(NUM_AXONS):0] row_count;                                // Stores the axon that we are currently analyzing  現在分析中の軸索を保存する
     
 
-    // Naming the possible states of the FSM
+    // Naming the possible states of the FSM      FSMの可能な状態に名前を付ける
     localparam IDLE = 0, SET_SCHED_INIT_CSRAM = 1, FIRST_AXON = 2, SPIKE_IN = 3, WRITE_CSRAM = 4, NEURON_CHECK = 5, CLR_SCHED = 6;
     
     // Report Token Controller error if we get a tick when we are not in the IDLE state 
+    //IDLE状態でないときにティックが発生した場合、トークン・コントローラーのエラーを報告する。
 
     initial begin
         neuron_reg_en <= 0;
@@ -67,13 +69,15 @@ module TokenController #(
         CSRAM_addr <= 0;
         spike_out <= 0;
         neuron_instruction <= 0;
-        $readmemb(FILENAME, neuron_instructions);
+        $readmemb(FILENAME, neuron_instructions);//FILENAMEにはtc_xxx.memがはいる
     end
     
     /*
     Incrementing the row_count on the negative edge makes it so
     we won't try to increment row_count while we are using it
     to index into a word.
+    負のエッジ(negedge clk)でrow_countをインクリメントすることで、row_countを
+    使ってwordのインデックスを作成している最中にrow_countをインクリメントしようとすることがなくなる。
     */
     always@(negedge clk) begin
         if (rst) begin
@@ -81,15 +85,21 @@ module TokenController #(
         end
         
         case(state)
-            SPIKE_IN: row_count <= row_count + 1;
+            SPIKE_IN: row_count <= row_count + 1;//0から255(AXON数)までインクリメント
             default: row_count <= 0;
         endcase
     end
-    
+    //デバッグ用
+        wire axon_spike_cnt;
+        wire synapses_cnt;
+        assign axon_spike_cnt = axon_spikes[row_count];
+        assign synapses_cnt = synapses[row_count];
     /*
     Token controller functionality is implemented as a FSM.
     On the positive edge it will send out control signals to
     the other modules and update its internal state.
+    トークン・コントローラーの機能は、FSMとして実装されている。
+    正のエッジ(posedge clk)で他のモジュールに制御信号を送り、内部状態を更新する。
     */
     always@(posedge clk)begin
         if(rst) begin
@@ -99,12 +109,14 @@ module TokenController #(
         end
         
         // Reporting the token controller error if receives a tick when not in IDLE state
+        //IDLE状態でないときにティックを受信した場合のトークンコントローラエラーの報告
         if ((error == 0) && (state != IDLE) && tick)
             error <= 1;
 
         case(state)
             /*
             In this state the TC waits for the 'tick' signal
+            この状態でTCは'tick'信号を待つ。
             */
             IDLE: begin
                 scheduler_clr <= 0;
@@ -118,10 +130,13 @@ module TokenController #(
             scheduler_set increments the address counter in the scheduler so the scheduler reads 
             from the correct tick. Initializes the address counter in the CSRAM so
             it reads the data from the first neuron.
+            この状態では、TC は<スケジューラを設定し、CSRAM を初期化する>信号を送信します。
+            scheduler_setは、スケジューラが正しいティックから読み出すように、スケジューラのアドレス・カウンタ
+            をインクリメントする。CSRAMのアドレス・カウンタを初期化し、最初のニューロンからデータを読み出すようにする。
             */
             SET_SCHED_INIT_CSRAM: begin
-                scheduler_set <= 1;
-                CSRAM_addr <= 0;
+                scheduler_set <= 1;//この信号をもらったスケジューラは、scheduler_SRAMの読み出しアドレスを更新する。SRAM内には、axon_spikeの情報が配列として格納
+                CSRAM_addr <= 0;//CSRAMのアドレス・カウンタを初期化>>CSRAM[0]がsynapses信号となり、それをCRAMからもらう
                 state <= FIRST_AXON;
             end
             
@@ -133,34 +148,43 @@ module TokenController #(
             write_current_potential high which will write the current potential of the neuron in 
             the register of the neuron block. If there is a spike and synapse on the first axon,
             it integrates the spike into the potential.
+            これはスパイクを処理できる2つの状態のうちの最初の状態である。このステートでは、next_neuron を high 
+            に設定し、NB がニューロンの現在の電位をラ ニングサムの開始点として使用することを認識する。最初の軸索
+            にスパイクとシナプスがなければ、write_current_potential を high(1) に設定し、ニューロンブロックのレジスタ
+            にニューロンの現在の電位を書き込む。最初の軸索にスパイクとシナプスがあれば、スパイクを電位に積分する。
             */
-            FIRST_AXON: begin
+            FIRST_AXON: begin//2
                 scheduler_set <= 0;
-                if (axon_spikes[row_count] && synapses[row_count])
+                //軸索とニューロンが接続してるかを確認。してるならその軸索に関連付けられた重みがニューロンブロックで処理される
+                if (axon_spikes[row_count] && synapses[row_count])//row_countは現在分析中の軸索
                     neuron_instruction <= neuron_instructions[row_count];
                 else
-                    write_current_potential <= 1;
-                next_neuron <= 1;
+                    write_current_potential <= 1;//ニューロンブロックのレジスタにニューロンの現在の電位を書き込む?
+                next_neuron <= 1;//next_neuron を high に設定
                 state <= SPIKE_IN;
                 neuron_reg_en <= 1;
             end
+            
 
             /*
             Once we get past the first axon we know that the value in the register in
             the neuron block is valid. We can then set next_neuron and write_current_potential
             low so the neuron block will integrate spikes for the remaining axons.
+            最初の軸索を越えれば、ニューロン・ブロックのレジスタの値が有効であることがわかる。next_neuron
+            とwrite_current_potentialをLow(0)に設定し、ニューロン・ブロックが残りの軸索のスパイクを積分するようにします。
             */
-            SPIKE_IN: begin
+            SPIKE_IN: begin//3
                 next_neuron <= 0;
                 write_current_potential <= 0;
-                neuron_reg_en <= axon_spikes[row_count] & synapses[row_count];
-                neuron_instruction <= neuron_instructions[row_count];
+                neuron_reg_en <= axon_spikes[row_count] & synapses[row_count];//すこしスパイクっぽいような信号。row_countが256回回るまで論理積やる
+                neuron_instruction <= neuron_instructions[row_count];//波形みたところ0,1,0,1,0,1,,,の連続
                 
                 // If we are on the NUM_AXONS-1 axon we are done processing the neuron
+                //NUM_AXONS-1軸索上にいる場合、ニューロンの処理は終了。NUM_AXONS-1軸索上にいない場合はSPIKE_IN継続
                 if (row_count == NUM_AXONS - 1)
                     state <= WRITE_CSRAM;
                 else
-                    state <= SPIKE_IN;
+                    state <= SPIKE_IN;//NUM_AXONS回、SPIKE_IN状態をループ
                 
             end
 
@@ -172,17 +196,21 @@ module TokenController #(
             full, we wait in this state until they are not full. If the 
             buffers aren't full we output a spike and move onto the 
             next state.
+             1つのニューロンの処理が終わると、CSRAM_write をハイに設定し、
+             更新された電位を CSRAM に書き戻す。この状態で、ニューロンがスパイクしたかどうかもチェックする。
+             ニューロンがスパイクしたが、ルーターのローカル・バッファが満杯である場合、満杯でなくなるまでこのステートで待機する。
+             もし バッファ満杯でなければ、スパイクを出力して次の状態に移る。次の状態に移る。
             */
-            WRITE_CSRAM: begin
+            WRITE_CSRAM: begin//4
                 neuron_reg_en <= 0;
-                if(spike_in) begin
+                if(spike_in) begin//from neuronblock
 				    if(local_buffers_full) begin
 				        spike_out <= 0;
 				        state <= WRITE_CSRAM;
 				    end
 				    else begin
-				        spike_out <= 1;
-                        CSRAM_write <= 1;
+				        spike_out <= 1;//to router spike_outが1になるのはspike_inが1のときではあるが、それに加えこのステイトにいないといけない。
+                        CSRAM_write <= 1;//更新された電位を CSRAM に書き戻す
 				        state <= NEURON_CHECK;
 				    end
 				end
@@ -198,6 +226,8 @@ module TokenController #(
             Setting spike low, if CSRAM has gone through every 
             neuron then we are done. If CSRAM still has neurons
             to go we go back to state 3 and process the next neuron
+            スパイクを0に設定し、CSRAMがすべてのニューロンを使い切ったら終了だ。
+            CSRAMにまだニューロンが残っていれば、状態3に戻り、次のニューロンを処理する。
             */
             NEURON_CHECK: begin
                 spike_out <= 0;
@@ -207,7 +237,7 @@ module TokenController #(
                 end
                 else begin
                    CSRAM_addr <= CSRAM_addr + 1;
-                   state <= FIRST_AXON;
+                   state <= FIRST_AXON;//状態3に戻り、次のニューロンを処理する
                 end
             end
 
@@ -215,6 +245,8 @@ module TokenController #(
             Clearing the scheduler so it deletes all of the spikes that were
             just processed. Then goes back to IDLE state until we receive
             another tick.
+            スケジューラーをクリアし、先ほど処理したスパイクをすべて削除する。
+            その後、次のティックを受信するまでIDLE状態に戻る。
             */
             CLR_SCHED: begin
                 scheduler_clr <= 1;

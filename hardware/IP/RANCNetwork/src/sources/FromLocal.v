@@ -16,8 +16,8 @@ module FromLocal #(
 )(
     input clk,
     input rst,
-    input [PACKET_WIDTH-1:0] din,
-    input din_wen,
+    input [PACKET_WIDTH-1:0] din,//CSRAMからのニューロンの目的地情報
+    input din_wen,//from controller
     input ren_east,
     input ren_west,
     output [PACKET_WIDTH-1:0] dout_east,
@@ -32,9 +32,9 @@ module FromLocal #(
     wire buffer_east_wen, buffer_west_wen;
     wire signed [DX_MSB:DX_LSB] dx;
     assign dx = din[DX_MSB:DX_LSB];
-    
-    assign buffer_east_in = din;
-    assign buffer_east_wen = dx < 0 ? 0 : din_wen; // if dx == 0 going east
+    //dx < 0なら、west側にパケットを書き込む
+    assign buffer_east_in = din;//データは流しとく
+    assign buffer_east_wen = dx < 0 ? 0 : din_wen; // if dx == 0 going east      din_wenはcontrollerからのspike
     
     assign buffer_west_in = din;
     assign buffer_west_wen = dx < 0 ? din_wen : 0;
@@ -46,7 +46,7 @@ module FromLocal #(
         .clk(clk),
         .rst(rst),
         .din(buffer_east_in),
-        .din_valid(buffer_east_wen),
+        .din_valid(buffer_east_wen),//wenが有効になったらバッファに書き込み
         .read_en(ren_east),
         .dout(dout_east),
         .empty(empty_east),
@@ -60,7 +60,7 @@ module FromLocal #(
         .clk(clk),
         .rst(rst),
         .din(buffer_west_in),
-        .din_valid(buffer_west_wen),
+        .din_valid(buffer_west_wen),//wenが有効になったらバッファに書き込み
         .read_en(ren_west),
         .dout(dout_west),
         .empty(empty_west),

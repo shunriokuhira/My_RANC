@@ -21,23 +21,24 @@ module RANCNetworkGrid #(
     parameter NUM_WEIGHTS = 4,
     parameter NUM_RESET_MODES = 2,
     parameter POTENTIAL_WIDTH = 9,
-    parameter WEIGHT_WIDTH = 9,
-    parameter LEAK_WIDTH = 9,
-    parameter THRESHOLD_WIDTH = 9,
+    parameter WEIGHT_WIDTH = 9,//重み幅
+    parameter LEAK_WIDTH = 9,//リーク値幅
+    parameter THRESHOLD_WIDTH = 9,//閾値幅
     parameter DX_MSB = 29,
     parameter DX_LSB = 21,
     parameter DY_MSB = 20,
     parameter DY_LSB = 12,
     parameter ROUTER_BUFFER_DEPTH = 4,
-    parameter MEMORY_FILEPATH = "C:/", 
+    //parameter MEMORY_FILEPATH = "C:/",
+    parameter MEMORY_FILEPATH = "/home/shunri/ranc_project/RANC/hardware/IP/RANCNetwork/src/simulations/memory_files/tea/256" ,
     parameter PACKET_WIDTH = (DX_MSB - DX_LSB + 1)+(DY_MSB - DY_LSB + 1)+$clog2(NUM_AXONS)+$clog2(NUM_TICKS)
 )(
     input clk,
     input rst,
     input tick,
     input input_buffer_empty,
-    input [PACKET_WIDTH-1:0] packet_in,
-    output [$clog2(NUM_OUTPUTS)-1:0] packet_out,
+    input [PACKET_WIDTH-1:0] packet_in,//30bit
+    output [$clog2(NUM_OUTPUTS)-1:0] packet_out,//8bit
     output packet_out_valid,
     output ren_to_input_buffer,
     output token_controller_error,
@@ -109,6 +110,7 @@ module RANCNetworkGrid #(
                 .DY_MSB(DY_MSB),
                 .DY_LSB(DY_LSB),
                 .ROUTER_BUFFER_DEPTH(ROUTER_BUFFER_DEPTH),
+                //STRING_INDICES[]配列部分から000から999の値を選ぶ。↓　curr_core(現在のコア番号)により変動
                 .CSRAM_FILE({MEMORY_FILEPATH, "csram_", STRING_INDICES[(MAX_NUM_CORES - curr_core)*STRING_LENGTH*8-:STRING_LENGTH*8], ".mem"}), 
                 .TC_FILE({MEMORY_FILEPATH, "tc_", STRING_INDICES[(MAX_NUM_CORES - curr_core)*STRING_LENGTH*8-:STRING_LENGTH*8], ".mem"})
             ) Core (

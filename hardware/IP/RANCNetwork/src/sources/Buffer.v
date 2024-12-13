@@ -3,10 +3,10 @@
 // buffer.v
 //
 // A simple buffer.
-// Reads and writes are synchronous
-// Reset is synchronous active high.
+// Reads and writes are synchronous 読み取りと書き込みは同期
+// Reset is synchronous active high. リセットは同期アクティブ・ハイ。
 //
-// NOTE: BUFFER_DEPTH has to be a power of 2 
+// NOTE: BUFFER_DEPTH has to be a power of 2  注意：BUFFER_DEPTHは2のべき乗でなければならない。
 // (Don't forget 1 is also a power of 2 :-) ).
 //////////////////////////////////////////////////////////////////////////////////
 

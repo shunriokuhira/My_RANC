@@ -7,6 +7,7 @@
 //  at the University of Arizona
 // 
 // A simple counter module that is initialized to all 1's.
+// すべて1に初期化される単純なカウンター・モジュール。
 //////////////////////////////////////////////////////////////////////////////////
 
 module Counter #(
