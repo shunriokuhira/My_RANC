@@ -12,9 +12,9 @@ reg s00_axis_tlast, s00_axis_tvalid;
 wire [$clog2(`num_outputs)-1:0] packet_out;
 wire packet_out_valid, token_controller_error, scheduler_error, packet_read_error, fifo_write_error, s00_axis_tready;
 
-initial begin
-    $from_myhdl(clk, rst, tick, s00_axis_aclk, s00_axis_aresetn, s00_axis_tdata, s00_axis_tstrb, s00_axis_tlast, s00_axis_tvalid);
-    $to_myhdl(packet_out, packet_out_valid, token_controller_error, scheduler_error, packet_read_error, fifo_write_error, s00_axis_tready);
+initial begin//vpi使用
+    $from_myhdl(clk, rst, tick, s00_axis_aclk, s00_axis_aresetn, s00_axis_tdata, s00_axis_tstrb, s00_axis_tlast, s00_axis_tvalid);//python側から受信
+    $to_myhdl(packet_out, packet_out_valid, token_controller_error, scheduler_error, packet_read_error, fifo_write_error, s00_axis_tready);//python側に送信
     $dumpfile("test.vcd");
     $dumpvars(0, test_RANCNetwork);
 end
@@ -37,6 +37,8 @@ RANCNetwork RANCNetwork_tb(
     .fifo_write_error       (fifo_write_error       ),
     .s00_axis_tready        (s00_axis_tready        )
 );
+// `define  max_dimension_x 512
+// `define  max_dimension_y 512
 
 defparam RANCNetwork_tb.GRID_DIMENSION_X = `grid_dimension_x;
 defparam RANCNetwork_tb.GRID_DIMENSION_Y = `grid_dimension_y;
@@ -52,8 +54,12 @@ defparam RANCNetwork_tb.POTENTIAL_WIDTH = `potential_width;
 defparam RANCNetwork_tb.WEIGHT_WIDTH = `weight_width;
 defparam RANCNetwork_tb.LEAK_WIDTH = `leak_width;
 defparam RANCNetwork_tb.THRESHOLD_WIDTH = `threshold_width;
-defparam RANCNetwork_tb.MAX_DIMENSION_X = `max_dimension_x;
-defparam RANCNetwork_tb.MAX_DIMENSION_Y = `max_dimension_y;
+// defparam RANCNetwork_tb.MAX_DIMENSION_X = `max_dimension_x;
+// defparam RANCNetwork_tb.MAX_DIMENSION_Y = `max_dimension_y;
+defparam RANCNetwork_tb.DX_MSB = `dx_msb;
+defparam RANCNetwork_tb.DX_LSB = `dx_lsb;
+defparam RANCNetwork_tb.DY_MSB = `dy_msb;
+defparam RANCNetwork_tb.DY_LSB = `dy_lsb;
 defparam RANCNetwork_tb.INPUT_BUFFER_DEPTH = `input_buffer_depth;
 defparam RANCNetwork_tb.ROUTER_BUFFER_DEPTH = `router_buffer_depth;
 defparam RANCNetwork_tb.MEMORY_FILEPATH = `memory_filepath;

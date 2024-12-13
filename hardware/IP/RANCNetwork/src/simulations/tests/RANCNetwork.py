@@ -3,7 +3,7 @@ from collections import namedtuple
 
 from myhdl import Cosimulation
 
-
+#cmdはテンプレート文字列として機能し、実行時に値を埋め込んでシステムコマンドとして実行
 cmd = ('iverilog -o RANCNetwork.o -I ../../sources -Dgrid_dimension_x=%s '
        '-Dgrid_dimension_y=%s -Doutput_core_x_coordinate=%s '
        '-Doutput_core_y_coordinate=%s -Dnum_outputs=%s -Dnum_neurons=%s '
@@ -39,7 +39,7 @@ Params = namedtuple('params', 'grid_dimension_x, grid_dimension_y,'
 
 
 def RANCNetwork(input_ports, output_ports, params):
-    os.system(cmd % (params.grid_dimension_x,
+    os.system(cmd % (params.grid_dimension_x,#cmdテンプレート内の%sがついてる部分を具体的な値にする
                      params.grid_dimension_y,
                      params.output_core_x_coordinate,
                      params.output_core_y_coordinate,
