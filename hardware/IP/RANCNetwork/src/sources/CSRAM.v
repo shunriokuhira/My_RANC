@@ -32,7 +32,7 @@ module CSRAM #(
     end
     
     always@(negedge clk) begin
-        if (wen) begin
+        if (wen) begin//from controller
             memory[address] <= data_in;
         end
         else begin

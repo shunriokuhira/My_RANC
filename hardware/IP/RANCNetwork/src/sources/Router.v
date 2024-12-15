@@ -67,6 +67,7 @@ module Router #(
     
     
     // This goes back to the Token Controller saying that the buffer it is writing to is full and it should halt
+    // これは、トークン・コントローラーが、書き込んでいるバッファが一杯になったので停止するように、と言っていることに戻る。
     assign local_buffers_full = full_local_to_east | full_local_to_west;
 
     FromLocal #(
@@ -83,7 +84,7 @@ module Router #(
         .ren_west(ren_west_to_local),       // Input  -- Read enable from merge in forward west
         .dout_east(data_local_to_east),     // Output -- Output bus from local to forward east
         .dout_west(data_local_to_west),     // Output -- Output bus from local to forward west
-        .empty_east(empty_local_to_east),   // Output -- Lets merge in forward east know if the buffer going to it is empty
+        .empty_east(empty_local_to_east),   // Output -- Lets merge in forward east know if the buffer going to it is empty フォワード・イーストのマージにバッファが空かどうかを知らせる。
         .empty_west(empty_local_to_west),   // Output -- Lets merge in forward west know if the buffer going to it is empty
         .full_east(full_local_to_east),     // Output -- If the buffer going to forward east is full, used to halt token controller
         .full_west(full_local_to_west)      // Output -- If the buffer going to forward west is full, used to halt token controller
@@ -111,7 +112,7 @@ module Router #(
         .ren_out_routing(ren_out_west),                 // Output -- Read enable to the buffer in the forward east module of the core to the west　forward_eastモジュール内の
         .ren_out_token_controller(ren_east_to_local),   // Output -- Read enable to the buffer in the from local module　フロムローカルモジュール内バッファへの書き込み許可信号
         .dout_routing(dout_east),                       // Output -- Output bus to the forward east module of the core to the east
-        .routing_buffer_empty(empty_out_east),          // Output -- Lets the forward east module of the core to the east know if the buffer going to it is empty
+        .routing_buffer_empty(empty_out_east),          // Output -- Lets the forward east module of the core to the east know if the buffer going to it is empty 東側コアのforward east moduleに向かうバッファが空かどうかを知らせる
         .dout_north(data_east_to_north),                // Output -- Output bus to the forward north module
         .north_buffer_empty(empty_east_to_north),       // Output -- Lets the forward north module know if the buffer going to it is empty
         .dout_south(data_east_to_south),                // Output -- Output bus to the forward south module
@@ -163,13 +164,13 @@ module Router #(
         .din_routing(din_south),                        // Input  -- Packet from the router of the core to the south コアのルーターから南へのパケット
         .din_east(data_east_to_north),                  // Input  -- Packet from the forward east module of this core
         .din_west(data_west_to_north),                  // Input  -- Packet from the forward west module of this core
-        .empty_routing(empty_in_south),                 // Input  -- Lets merge know if the buffer in the south core is empty
+        .empty_routing(empty_in_south),                 // Input  -- Lets merge know if the buffer in the south core is empty 南コアのバッファが空であるならマージモジュールに知らせる
         .empty_east(empty_east_to_north),               // Input  -- Lets merge know if the buffer in the forward east module of this core is empty
         .empty_west(empty_west_to_north),               // Input  -- Lets merge know if the buffer in the forward west module of this core is empty
         .ren_in_local(ren_local_to_north),              // Input  -- Read enable from this core's local in module
         .ren_in_routing(ren_in_north),                  // Input  -- Read enable from the merge in the forward north module of the core to the north
         .ren_out_routing(ren_out_south),                // Output -- Read enable to the buffer in the forward north module of the core to the south
-        .ren_out_east(ren_north_to_east),               // Output -- Read enable to the buffer in the forward east module
+        .ren_out_east(ren_north_to_east),               // Output -- Read enable to the buffer in the forward east module 　forward_eastモジュール内バッファへの書き込み許可信号
         .ren_out_west(ren_north_to_west),               // Output -- Read enable to the buffer in the forward west module
         .dout_routing(dout_north),                      // Output -- Output bus to the forward north module of the core to the north
         .dout_local(data_north_to_local),               // Output -- Output bus to the local in module of this core
@@ -206,7 +207,7 @@ module Router #(
     );
     
     LocalIn #(
-        .PACKET_WIDTH(PACKET_WIDTH-(DX_MSB-(DY_LSB-1)))
+        .PACKET_WIDTH(PACKET_WIDTH-(DX_MSB-(DY_LSB-1)))//ここでのパラメータ指定で、dxとdyの情報は破棄され出力パケットを12ビットに変換
     ) local_in (
         .clk(clk),
         .rst(rst),

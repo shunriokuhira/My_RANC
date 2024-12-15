@@ -141,7 +141,7 @@ CSRAM #(
     .address(CSRAM_addr),
     .data_in({CSRAM_data[CSRAM_WIDTH-1:CSRAM_SYNAPTIC_CONNECTIONS_BOTTOM_INDEX], neuron_potential, CSRAM_data[CSRAM_CURRENT_POTENTIAL_BOTTOM_INDEX-1:0]}),
     .data_out(CSRAM_data)//output reg to CSRAM, controller, neuronblock, router
-);
+);//CSRAMとの接続をみるとアドレスとイネーブル信号はコントローラから来てるためほぼコントローラがCSRAMへの読み書き権限をもっている
 
 TokenController #(
     .NUM_AXONS(NUM_AXONS),

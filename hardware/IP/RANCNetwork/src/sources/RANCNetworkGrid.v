@@ -63,7 +63,7 @@ module RANCNetworkGrid #(
     wire [NUM_CORES - 1:0] ren_east_bus;
     wire [NUM_CORES - 1:0] empty_east_bus;
     
-    // Wires for Westward Routing Communication
+    // Wires for Westward Routing Communication 西向きルーティング通信用のwire
     wire [NUM_CORES - 1:0] ren_west_bus;
     wire [NUM_CORES - 1:0] empty_west_bus;
     
@@ -85,7 +85,7 @@ module RANCNetworkGrid #(
     
     assign token_controller_error = | token_controller_errors;  // OR all TC errors to get final token_controller_error
     assign scheduler_error = | scheduler_errors;                // OR all SCH errors to get final scheduler error
-    assign ren_to_input_buffer = ren_west_bus[0];               // Read enable to the buffer that stores the input packets
+    assign ren_to_input_buffer = ren_west_bus[0];               // Read enable to the buffer that stores the input packets 入力パケットを格納するバッファへの読み取り許可
     
     for (curr_core = 0; curr_core < GRID_DIMENSION_X * GRID_DIMENSION_Y; curr_core = curr_core + 1) begin : gencore
         localparam right_edge = curr_core % GRID_DIMENSION_X == (GRID_DIMENSION_X - 1);

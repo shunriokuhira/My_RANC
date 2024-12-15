@@ -30,9 +30,9 @@ module PathDecoder3Way#(
     input wen,//from merge module
     output [DATA_WIDTH-1:0] dout_a,//to rooting_buffer
     output wen_a,//to rooting_buffer
-    output [DATA_WIDTH-1-(DX_MSB-DY_MSB):0] dout_b,//to north_buffer
+    output [DATA_WIDTH-1-(DX_MSB-DY_MSB):0] dout_b,//to north_buffer  dx座標は切り取る >> ビット幅[20:0]
     output wen_b,//to north_buffer
-    output [DATA_WIDTH-1-(DX_MSB-DY_MSB):0] dout_c,//to south_buffer
+    output [DATA_WIDTH-1-(DX_MSB-DY_MSB):0] dout_c,//to south_buffer　dx座標は切り取る >> ビット幅[20:0]
     output wen_c//to south_buffer
 );
 
@@ -46,7 +46,7 @@ module PathDecoder3Way#(
     
     //to rooting_buffer
     //assign dout_a = DATA_WIDTH-1 == DX_MSB ? {dx_plus_add, din[DX_LSB-1:0]} : {din[DATA_WIDTH-1:DX_MSB+1], dx_plus_add, din[DX_LSB-1:0]};
-    assign dout_a = {dx_plus_add, din[DX_LSB-1:0]};
+    assign dout_a = {dx_plus_add, din[DX_LSB-1:0]};//dxだけインクリメントされて更新
     assign wen_a = dx == 0 ? 0 : wen;
     
     //to north_buffer(北)

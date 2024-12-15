@@ -153,14 +153,14 @@ module TokenController #(
             にスパイクとシナプスがなければ、write_current_potential を high(1) に設定し、ニューロンブロックのレジスタ
             にニューロンの現在の電位を書き込む。最初の軸索にスパイクとシナプスがあれば、スパイクを電位に積分する。
             */
-            FIRST_AXON: begin//2
+            FIRST_AXON: begin//state2
                 scheduler_set <= 0;
                 //軸索とニューロンが接続してるかを確認。してるならその軸索に関連付けられた重みがニューロンブロックで処理される
                 if (axon_spikes[row_count] && synapses[row_count])//row_countは現在分析中の軸索
-                    neuron_instruction <= neuron_instructions[row_count];
+                    neuron_instruction <= neuron_instructions[row_count];//ニューロンブロック内MUXにて重みが選ばれる
                 else
                     write_current_potential <= 1;//ニューロンブロックのレジスタにニューロンの現在の電位を書き込む?
-                next_neuron <= 1;//next_neuron を high に設定
+                next_neuron <= 1;//next_neuron を high に設定 >> neuronblock側でcurrent_potential(現在電位)を選択
                 state <= SPIKE_IN;
                 neuron_reg_en <= 1;
             end
@@ -172,15 +172,29 @@ module TokenController #(
             low so the neuron block will integrate spikes for the remaining axons.
             最初の軸索を越えれば、ニューロン・ブロックのレジスタの値が有効であることがわかる。next_neuron
             とwrite_current_potentialをLow(0)に設定し、ニューロン・ブロックが残りの軸索のスパイクを積分するようにします。
+            ※積分するときはnext_neuronとwrite_current_potentialをLow(0)に設定
+
+            多分、イメージなんだけどこのSPIKE_INていう状態はいっこのニューロンにたいする256個の軸索入力
             */
-            SPIKE_IN: begin//3
-                next_neuron <= 0;
+            SPIKE_IN: begin//state3
+                next_neuron <= 0;//ここが1だとNPの更新ができない．ループならないので
                 write_current_potential <= 0;
-                neuron_reg_en <= axon_spikes[row_count] & synapses[row_count];//すこしスパイクっぽいような信号。row_countが256回回るまで論理積やる
-                neuron_instruction <= neuron_instructions[row_count];//波形みたところ0,1,0,1,0,1,,,の連続
+
+                /*neuron_reg_enはすこしスパイクっぽいような信号。row_countが256回回るまで論理積やる
+                neuron_reg_enを受け取ったニューロンブロックはその信号に同期してNP(ff)の値を更新し続ける。
+                その結果、ニューロンひとつ分の電位が更新される．多分，NPは現在の電位を格納してるレジスタ
+                256回の論理積で最終的に更新された電位の値が閾値を上回ってたらスパイクをニューロンブロックから
+                受け取るみたいな感じ．
+                */
+                neuron_reg_en <= axon_spikes[row_count] & synapses[row_count];
+                neuron_instruction <= neuron_instructions[row_count];
+                /*↑↑neuroninstructionは波形みたところ0,1,0,1,0,1,,,の連続 neuron_instructionの値自体は、
+                外部ファイルから読みだしてる情報なのでニューラルネットワーク生成時にはじめから決まってる値かもしれない
+                */
+
                 
                 // If we are on the NUM_AXONS-1 axon we are done processing the neuron
-                //NUM_AXONS-1軸索上にいる場合、ニューロンの処理は終了。NUM_AXONS-1軸索上にいない場合はSPIKE_IN継続
+                //NUM_AXONS-1軸索上にいる場合、ニューロン一つ分の処理は終了。NUM_AXONS-1軸索上にいない場合はSPIKE_IN継続
                 if (row_count == NUM_AXONS - 1)
                     state <= WRITE_CSRAM;
                 else
@@ -201,9 +215,13 @@ module TokenController #(
              ニューロンがスパイクしたが、ルーターのローカル・バッファが満杯である場合、満杯でなくなるまでこのステートで待機する。
              もし バッファ満杯でなければ、スパイクを出力して次の状態に移る。次の状態に移る。
             */
-            WRITE_CSRAM: begin//4
+            WRITE_CSRAM: begin//state4
                 neuron_reg_en <= 0;
-                if(spike_in) begin//from neuronblock
+                /*spike_in >> ニューロンブロック内にて，ニューロンがスパイクしたかどうか
+                ただ、spike_inそのものはスパイク信号という感じではない。ニューロンブロックから現在のニューロンの状態が送られて
+                きているという感じで、閾値に達してるなら1、そうでないなら0という感じ。
+                */
+                if(spike_in) begin//from neuronblock　最初から1
 				    if(local_buffers_full) begin
 				        spike_out <= 0;
 				        state <= WRITE_CSRAM;
@@ -229,7 +247,7 @@ module TokenController #(
             スパイクを0に設定し、CSRAMがすべてのニューロンを使い切ったら終了だ。
             CSRAMにまだニューロンが残っていれば、状態3に戻り、次のニューロンを処理する。
             */
-            NEURON_CHECK: begin
+            NEURON_CHECK: begin//state5
                 spike_out <= 0;
                 CSRAM_write <= 0;
                 if (CSRAM_addr == NUM_NEURONS - 1) begin
@@ -248,7 +266,7 @@ module TokenController #(
             スケジューラーをクリアし、先ほど処理したスパイクをすべて削除する。
             その後、次のティックを受信するまでIDLE状態に戻る。
             */
-            CLR_SCHED: begin
+            CLR_SCHED: begin//state6
                 scheduler_clr <= 1;
 				state <= IDLE;
             end

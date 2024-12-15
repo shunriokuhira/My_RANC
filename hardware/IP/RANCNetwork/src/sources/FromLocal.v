@@ -17,7 +17,7 @@ module FromLocal #(
     input clk,
     input rst,
     input [PACKET_WIDTH-1:0] din,//CSRAMからのニューロンの目的地情報
-    input din_wen,//from controller
+    input din_wen,//コントローラからのスパイク列
     input ren_east,
     input ren_west,
     output [PACKET_WIDTH-1:0] dout_east,
