@@ -181,7 +181,7 @@ class TestRANCNetwork(unittest.TestCase):
         leak_width = 9
         threshold_width = 9
         input_buffer_depth = 512
-        router_buffer_depth = 4
+        router_buffer_depth = 1
         if num_axons == num_neurons:
             test_name = str(num_axons)
         else:
