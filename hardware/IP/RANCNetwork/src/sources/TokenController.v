@@ -118,7 +118,7 @@ module TokenController #(
             In this state the TC waits for the 'tick' signal
             この状態でTCは'tick'信号を待つ。
             */
-            IDLE: begin
+            IDLE: begin//state0
                 scheduler_clr <= 0;
                 if (tick)
                     state <= SET_SCHED_INIT_CSRAM;
@@ -134,7 +134,7 @@ module TokenController #(
             scheduler_setは、スケジューラが正しいティックから読み出すように、スケジューラのアドレス・カウンタ
             をインクリメントする。CSRAMのアドレス・カウンタを初期化し、最初のニューロンからデータを読み出すようにする。
             */
-            SET_SCHED_INIT_CSRAM: begin
+            SET_SCHED_INIT_CSRAM: begin//state1
                 scheduler_set <= 1;//この信号をもらったスケジューラは、scheduler_SRAMの読み出しアドレスを更新する。SRAM内には、axon_spikeの情報が配列として格納
                 CSRAM_addr <= 0;//CSRAMのアドレス・カウンタを初期化>>CSRAM[0]がsynapses信号となり、それをCRAMからもらう
                 state <= FIRST_AXON;
@@ -152,6 +152,10 @@ module TokenController #(
             に設定し、NB がニューロンの現在の電位をラ ニングサムの開始点として使用することを認識する。最初の軸索
             にスパイクとシナプスがなければ、write_current_potential を high(1) に設定し、ニューロンブロックのレジスタ
             にニューロンの現在の電位を書き込む。最初の軸索にスパイクとシナプスがあれば、スパイクを電位に積分する。
+
+            多分、ここでの処理でやりたいのはニューロンブロック内のNPレジスタの初期化みたいなことだと思う
+            最初の軸索入力とシナプスとの接続があれば、current_potentialに重みを加えた値をNPに入れる
+            接続がなければ、そのままcurrent_potentialを入れる
             */
             FIRST_AXON: begin//state2
                 scheduler_set <= 0;
@@ -218,13 +222,13 @@ module TokenController #(
             WRITE_CSRAM: begin//state4
                 neuron_reg_en <= 0;
                 /*spike_in >> ニューロンブロック内にて，ニューロンがスパイクしたかどうか
-                ただ、spike_inそのものはスパイク信号という感じではない。ニューロンブロックから現在のニューロンの状態が送られて
-                きているという感じで、閾値に達してるなら1、そうでないなら0という感じ。
+                ただ、spike_inそのものはスパイク信号というかはトグル波っぽい。ニューロンブロックから現在のニューロンの"状態"が送られて
+                きているという感じで、閾値に達してるなら状態ならずっと1、そうでないならずっと0という感じ。
                 */
-                if(spike_in) begin//from neuronblock　最初から1
+                if(spike_in) begin//from neuronblock　初期値1　トグル波
 				    if(local_buffers_full) begin
 				        spike_out <= 0;
-				        state <= WRITE_CSRAM;
+				        state <= WRITE_CSRAM;//FlomLocalのバッファの空きがでるまでstate4をループさせて待機
 				    end
 				    else begin
 				        spike_out <= 1;//to router spike_outが1になるのはspike_inが1のときではあるが、それに加えこのステイトにいないといけない。

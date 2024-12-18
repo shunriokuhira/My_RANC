@@ -15,7 +15,7 @@ module ThresholdResetUnit #(
 )(
     input signed [POTENTIAL_WIDTH-1:0] potential_in,//from neuronblock
     input signed [THRESHOLD_WIDTH-1:0] positive_threshold,
-    input signed [THRESHOLD_WIDTH-1:0] negative_threshold,
+    input signed [THRESHOLD_WIDTH-1:0] negative_threshold,//0
     input signed [POTENTIAL_WIDTH-1:0] reset_potential,//値はゼロ
     input [$clog2(NUM_RESET_MODES)-1:0] reset_mode,
     output signed [POTENTIAL_WIDTH-1:0] potential_out,//to CSRAM
@@ -40,8 +40,8 @@ module ThresholdResetUnit #(
         case(reset_mode)
             // Hard reset
             0: begin
-                positive_reset_value = reset_potential;
-                negative_reset_value = -reset_potential;
+                positive_reset_value = reset_potential;//0
+                negative_reset_value = -reset_potential;//1
             end
             // Linear reset
             1: begin

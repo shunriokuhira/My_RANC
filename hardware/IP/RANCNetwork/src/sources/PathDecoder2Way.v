@@ -21,13 +21,13 @@ module PathDecoder2Way#(
     parameter DATA_WIDTH = 23,
     parameter DY_MSB = 20,
     parameter DY_LSB = 12,
-    parameter ADD = 1
+    parameter ADD = 1//forward north(北)なら-1、forward southなら1
 )(
     input [DATA_WIDTH-1:0] din,
     input wen,
-    output [DATA_WIDTH-1:0] dout_a,
+    output [DATA_WIDTH-1:0] dout_a,//21bit
     output wen_a,
-    output [DATA_WIDTH-1-(DY_MSB-(DY_LSB-1)):0] dout_b,
+    output [DATA_WIDTH-1-(DY_MSB-(DY_LSB-1)):0] dout_b,//12bit
     output wen_b
 );
 
@@ -38,11 +38,11 @@ module PathDecoder2Way#(
     assign dy_plus_add = dy + ADD;
     
     //assign dout_a = DATA_WIDTH-1 == DY_MSB ? {dy_plus_add, din[DY_LSB-1:0]} : {din[DATA_WIDTH-1:DY_MSB+1], dy_plus_add, din[DY_LSB-1:0]};
-    assign dout_a = {dy_plus_add, din[DY_LSB-1:0]};
-    assign wen_a = dy == 0 ? 0 : wen;
+    assign dout_a = {dy_plus_add, din[DY_LSB-1:0]};//to north or south
+    assign wen_a = dy == 0 ? 0 : wen;//dyが0でないならまだ目的のコアにはたどり着いていないため外部コアへルーティング
     
     //assign dout_b = DATA_WIDTH-1 == DY_MSB ? din[DY_LSB-1:0] : {din[DATA_WIDTH-1:DY_MSB+1], din[DY_LSB-1:0]};
-    assign dout_b = din[DY_LSB-1:0];
+    assign dout_b = din[DY_LSB-1:0];//to locall >> パケットが目的地に到着
     assign wen_b = dy == 0 ? wen : 0;
 
 endmodule

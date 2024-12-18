@@ -26,7 +26,7 @@ module buffer#(
 );
     
     localparam BUFFER_WIDTH = $clog2(BUFFER_DEPTH);
-
+    wire [DATA_WIDTH-1:0] buff_0, buff_1, buff_2, buff_3;
     /* 
     If BUFFER_DEPTH is 1 the logic needs to be different
     as read_pointer / write_pointer should not be used. Using
@@ -113,9 +113,15 @@ module buffer#(
                 end
             end
         end
+
+        
+        assign buff_0 = data[0];
+        assign buff_1 = data[1];
+        assign buff_2 = data[2];
+        assign buff_3 = data[3];
     endgenerate
 
-    //デバッグ用
+    
     // wire [DATA_WIDTH-1:0] buff_0, buff_1, buff_2, buff_3;
     // assign buff_0 = data[0];
     // assign buff_1 = data[1];

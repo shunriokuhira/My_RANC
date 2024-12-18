@@ -21,9 +21,9 @@ module Merge3#(
     input [DATA_WIDTH-1:0] din_c,
     input buffer_c_empty,
     input buffer_out_full,
-    output reg read_en_a,
-    output reg read_en_b,
-    output reg read_en_c,
+    output reg read_en_a,//ren_out_routing
+    output reg read_en_b,//ren_out_east
+    output reg read_en_c,//ren_out_west
     output reg [DATA_WIDTH-1:0] dout,
     output reg wen
     );
@@ -45,17 +45,17 @@ module Merge3#(
             wen <= 0;
         end
         else if (!buffer_out_full) begin
-            if (read_en_a) begin
+            if (read_en_a) begin//ren_out_routing
                 wen <= 1;
                 dout <= din_a;
                 read_en_a <= 0;
             end
-            else if (read_en_b) begin
+            else if (read_en_b) begin//ren_out_east
                 wen <= 1;
                 dout <= din_b;
                 read_en_b <= 0;
             end
-            else if (read_en_c) begin
+            else if (read_en_c) begin//ren_out_west
                 wen <= 1;
                 dout <= din_c;
                 read_en_c <= 0;

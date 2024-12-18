@@ -24,7 +24,7 @@ module PathDecoder3Way#(
     parameter DX_LSB = 21,
     parameter DY_MSB = 20,
     parameter DY_LSB = 12,
-    parameter ADD = 1
+    parameter ADD = 1//forward eastなら-1、forward westなら1
 )(
     input [DATA_WIDTH-1:0] din,//merge moduleからのパケット
     input wen,//from merge module
@@ -44,10 +44,10 @@ module PathDecoder3Way#(
     wire [DX_MSB:DX_LSB] dx_plus_add;//9bit
     assign dx_plus_add = dx + ADD;
     
-    //to rooting_buffer
+    //to rooting_buffer(西または東)
     //assign dout_a = DATA_WIDTH-1 == DX_MSB ? {dx_plus_add, din[DX_LSB-1:0]} : {din[DATA_WIDTH-1:DX_MSB+1], dx_plus_add, din[DX_LSB-1:0]};
     assign dout_a = {dx_plus_add, din[DX_LSB-1:0]};//dxだけインクリメントされて更新
-    assign wen_a = dx == 0 ? 0 : wen;
+    assign wen_a = dx == 0 ? 0 : wen;//dx==0とはそれ以上水平方向にパケットを移動しないでいいということ
     
     //to north_buffer(北)
     //assign dout_b = DATA_WIDTH-1 == DX_MSB ? din[DX_LSB-1:0] : {din[DATA_WIDTH-1:DX_MSB+1], din[DX_LSB-1:0]};
