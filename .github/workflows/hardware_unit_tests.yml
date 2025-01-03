@@ -3,10 +3,10 @@ name: RANC Hardware Unit Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths: [ 'hardware/*', '.github/workflows/hardware_unit_tests.yml' ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
     paths: [ 'hardware/*', '.github/workflows/hardware_unit_tests.yml' ]
 
 jobs:

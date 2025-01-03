@@ -34,14 +34,14 @@ module buffer#(
     BUFFER_DEPTHが1の場合、read_pointer / write_pointerを使用しないため、
     ロジックを変える必要がある。generateステートメントを使用してロジックを正しく生成する
     */
-    generate
-        if (BUFFER_DEPTH != 1) begin
+    //generate
+        //if (BUFFER_DEPTH != 1) begin
             reg [DATA_WIDTH-1:0] data [BUFFER_DEPTH-1:0];
             reg [BUFFER_WIDTH-1:0] read_pointer, write_pointer;
             reg [BUFFER_WIDTH:0] status_counter;//どんくらい溜まってるか状態を保存
             reg [DATA_WIDTH-1:0] output_data;
             
-            assign empty = status_counter == 0;//バッファ内部が完全に空っぽ
+            assign empty = status_counter == 0;//バッファ内部が完全に空
             assign full = status_counter == BUFFER_DEPTH;//満タン
             assign dout = output_data;//データは流しとく(初期値ゼロ)
 
@@ -77,49 +77,51 @@ module buffer#(
                     end
                 end
             end
-        end
-        else begin//↓↓以下はバッファの深さが1のときの話なのでいまあまり関係ない
-            reg [DATA_WIDTH-1:0] data;
-            reg status_counter;
-            reg [DATA_WIDTH-1:0] output_data;
+        //end
+
+
+    //     else begin//↓↓以下はバッファの深さが1のときの話なのでいまあまり関係ない
+    //         reg [DATA_WIDTH-1:0] data;
+    //         reg status_counter;
+    //         reg [DATA_WIDTH-1:0] output_data;
             
-            assign empty = status_counter == 0;
-            assign full = status_counter == BUFFER_DEPTH;
-            assign dout = output_data;
+    //         assign empty = status_counter == 0;
+    //         assign full = status_counter == BUFFER_DEPTH;
+    //         assign dout = output_data;
 
-            integer i;
-            initial begin
-                data <= 0;
-                status_counter <= 0;
-                output_data <= 0;
-            end
+    //         integer i;
+    //         initial begin
+    //             data <= 0;
+    //             status_counter <= 0;
+    //             output_data <= 0;
+    //         end
 
 
-            always@(posedge clk) begin
-                if (rst) begin
-                    data <= 0;
-                    status_counter <= 0;
-                    output_data <= 0;
-                end
-                else begin
-                    if (!full && din_valid) begin
-                        data = din;
-                        status_counter = status_counter + 1;
-                    end
-                    if (read_en && !empty) begin
-                        output_data = data;
-                        status_counter = status_counter - 1;
-                    end
-                end
-            end
-        end
+    //         always@(posedge clk) begin
+    //             if (rst) begin
+    //                 data <= 0;
+    //                 status_counter <= 0;
+    //                 output_data <= 0;
+    //             end
+    //             else begin
+    //                 if (!full && din_valid) begin
+    //                     data = din;
+    //                     status_counter = status_counter + 1;
+    //                 end
+    //                 if (read_en && !empty) begin
+    //                     output_data = data;
+    //                     status_counter = status_counter - 1;
+    //                 end
+    //             end
+    //         end
+    //     end
 
         
-        assign buff_0 = data[0];
-        assign buff_1 = data[1];
-        assign buff_2 = data[2];
-        assign buff_3 = data[3];
-    endgenerate
+    //     assign buff_0 = data[0];
+    //     assign buff_1 = data[1];
+    //     assign buff_2 = data[2];
+    //     assign buff_3 = data[3];
+    // endgenerate
 
     
     // wire [DATA_WIDTH-1:0] buff_0, buff_1, buff_2, buff_3;

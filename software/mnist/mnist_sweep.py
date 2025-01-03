@@ -14,21 +14,29 @@ def train_model(config_num, save_dest, num_epochs, num_test_samples):
     x_test = x_test.astype('float32')
     x_train /= 255
     x_test /= 255
-                        
+
+    #ラベルデータをOne-Hotエンコーディング形式に変換   
+    # 0と1の羅列のベクトルになる。ベクトルの長さは第二引数から10になってる。                 
     y_train = to_categorical(y_train, 10)
     y_test = to_categorical(y_test, 10)
 
+    #28×28ピクセルのグレースケール画像をニューラルネットワークの入力として定義するためのコード
+    #第三引数の1は白黒画像であることを示す
     inputs = Input(shape=(28,28,1))
 
+    #28×28ピクセルの2次元画像データを784次元の1次元ベクトルに変換。
+    # この操作により、画像データを後続のニューラルネットワーク層（特に全結合層）で利用できる形式に変換
     flattened_inputs = Flatten()(inputs)
 
     if config_num == 1:
-        # Default from Spencer's example.py
-        # Also from Experiments -> neuron_axon_sweep -> 256.py
-        core0 = Lambda(lambda x : x[:, :256])(flattened_inputs)
-        core1 = Lambda(lambda x : x[:, 176:432])(flattened_inputs)
-        core2 = Lambda(lambda x : x[:, 352:608])(flattened_inputs)
-        core3 = Lambda(lambda x : x[:, 528:])(flattened_inputs)
+        # Default from Spencer's example.py Spencerのexample.pyのデフォルト
+        # Also from Experiments -> neuron_axon_sweep -> 256.py 同じく Experiments -> neuron_axon_sweep -> 256.py から。
+        
+        #784次元のベクトルを256次元ごとに分割し、異なるサブネットワークで処理するための準備をしている
+        core0 = Lambda(lambda x : x[:, :256])(flattened_inputs)# 最初の256要素を抽出
+        core1 = Lambda(lambda x : x[:, 176:432])(flattened_inputs)#176番目から431番目まで（256要素）を抽出
+        core2 = Lambda(lambda x : x[:, 352:608])(flattened_inputs)#352番目から607番目まで（256要素）を抽出
+        core3 = Lambda(lambda x : x[:, 528:])(flattened_inputs)#528番目から最後(784)までを抽出
 
         core0 = Tea(units=64, name='tea_1_1')(core0)
         core1 = Tea(units=64, name='tea_1_2')(core1)

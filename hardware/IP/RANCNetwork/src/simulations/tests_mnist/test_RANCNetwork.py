@@ -102,7 +102,9 @@ class TestRANCNetwork(unittest.TestCase):
                               int(bin(num_ticks.val), 2),
                               int(bin(packet_count.val), 2),
                               bin(packet_out.val), correct_packet))
-                    print('packet_out_valid {}:', packet_out_valid.val)
+                    print('packet_out_valid :', packet_out_valid.val)
+                    print('router_buffer_depth', router_buffer_depth)
+
                 current_correct_line.next = current_correct_line + 1
                 self.assertEqual(int(bin(packet_out.val), 2),
                                  int(correct_packet, 2))
@@ -181,7 +183,7 @@ class TestRANCNetwork(unittest.TestCase):
         leak_width = 9
         threshold_width = 9
         input_buffer_depth = 512
-        router_buffer_depth = 1
+        router_buffer_depth = 4
         if num_axons == num_neurons:
             test_name = str(num_axons)
         else:
