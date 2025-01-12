@@ -26,10 +26,10 @@ module FromLocal #(
     output empty_east,
     output empty_west,
     //output buffer_empty,
-    output buffer_full,
+    output buffer_full
     //output full_west
-    output local_east_men,
-    output local_west_men
+   // output local_east_men,
+   // output local_west_men
 );
     wire ren;
     assign ren = ren_east | ren_west;
@@ -59,11 +59,11 @@ module FromLocal #(
 
     //パケットの宛先方角(west or east)を決める
     assign dout_east = dout2;
-    assign local_east_men = dx < 0 ? 0 : 1; // マージのための書き込みイネーブル信号。バッファではない
+    //assign local_east_men = dx < 0 ? 0 : 1; // マージのための書き込みイネーブル信号。バッファではない
     assign empty_east = dx < 0 ? 1 : buffer_empty;
 
     assign dout_west = dout2;
-    assign local_west_men = dx < 0 ? 1 : 0;
+    //assign local_west_men = dx < 0 ? 1 : 0;
     assign empty_west = dx < 0 ? buffer_empty : 1;//emptyが0だと空でないという意味なのでrenリクエストがbufferにきてしまう
     
 endmodule

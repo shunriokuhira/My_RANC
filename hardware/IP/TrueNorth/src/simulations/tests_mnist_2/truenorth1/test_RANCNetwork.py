@@ -127,12 +127,8 @@ class TestRANCNetwork(unittest.TestCase):
         """Comparing 10 MNIST images with simulator"""
         # num_axons = 512
         # num_neurons = 128
-
         num_axons = 256
         num_neurons = 256
-
-        # num_axons = 512
-        # num_neurons = 512
 
         # Parameters for this particular test
         if num_axons == 512 and num_neurons == 128:
@@ -188,18 +184,19 @@ class TestRANCNetwork(unittest.TestCase):
         threshold_width = 9
         input_buffer_depth = 512
         router_buffer_depth = 4
+        
         if num_axons == num_neurons:
             test_name = str(num_axons)
         else:
             test_name = '{}_{}'.format(num_axons, num_neurons)
-        memory_filepath = '../memory_files/tea/{}/'.format(test_name)
+        memory_filepath = '../../memory_files/tea/{}/'.format(test_name)
         maximum_number_of_packets = 400
         c_s00_axis_tdata_width = 32
         num_inputs_filepath = \
-            '../memory_files/tea/{}/tb_num_inputs.txt'.format(test_name)
-        input_filepath = '../memory_files/tea/{}/tb_input.txt'.format(
+            '../../memory_files/tea/{}/tb_num_inputs.txt'.format(test_name)
+        input_filepath = '../../memory_files/tea/{}/tb_input.txt'.format(
             test_name)
-        correct_filepath = '../memory_files/tea/{}/tb_correct.txt'.format(
+        correct_filepath = '../../memory_files/tea/{}/tb_correct.txt'.format(
             test_name)
 
         # Opening the files that are to be used in the initial block

@@ -1,0 +1,3 @@
+pathdecoder内部にレジスタを配置
+merge_enは消した
+bafferからのemptyのみでreadの競合を解消しようとした

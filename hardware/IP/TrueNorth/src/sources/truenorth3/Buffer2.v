@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module buffer#(
+module buffer2#(
     parameter DATA_WIDTH = 32,
     parameter BUFFER_DEPTH = 4
 )(
@@ -22,7 +22,8 @@ module buffer#(
     input read_en,
     output [29:0] dout,
     output empty,
-    output full
+    output full,
+    output [DATA_WIDTH-1:0] dx_dy
 );
     
     localparam BUFFER_WIDTH = $clog2(BUFFER_DEPTH);
@@ -42,10 +43,18 @@ module buffer#(
             reg [DATA_WIDTH-1:0] output_data;
 
             wire [9:0] status_cnt;
+            wire [DATA_WIDTH-1:0] write_data, data0, data1, data2, data3;
             assign status_cnt = status_counter;
             assign empty = status_counter == 0;//バッファ内部が完全に空
             assign full = status_counter == BUFFER_DEPTH;//満タン
             assign dout = output_data;//データは流しとく(初期値ゼロ)
+            //assign dx_dy = data[write_pointer];
+            assign dx_dy = data[read_pointer];
+            assign write_data = data[write_pointer];
+            assign data0 = data[0];
+            assign data1 = data[1];
+            assign data2 = data[2];
+            assign data3 = data[3];
 
             integer i;
             initial begin
