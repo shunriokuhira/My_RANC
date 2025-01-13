@@ -40,7 +40,8 @@ module RANCNetworkGrid #(
     input [PACKET_WIDTH-1:0] packet_in,//30bit
     output [$clog2(NUM_OUTPUTS)-1:0] packet_out,//8bit
     output packet_out_valid,
-    output ren_to_input_buffer,
+    output full_to_input_renGen,
+    output wait_to_input_renGen,
     output token_controller_error,
     output scheduler_error
 );
@@ -60,20 +61,25 @@ module RANCNetworkGrid #(
     wire [NUM_CORES - 1:0] scheduler_errors;
     
     // Wires for Eastward Routing Communication
-    wire [NUM_CORES - 1:0] ren_east_bus;
-    wire [NUM_CORES - 1:0] empty_east_bus;
+    wire [NUM_CORES - 1:0] men_east_bus;
+    wire [NUM_CORES - 1:0] full_east_bus;
+    wire [NUM_CORES - 1:0] wait_east_bus;
+
     
     // Wires for Westward Routing Communication 西向きルーティング通信用のwire
-    wire [NUM_CORES - 1:0] ren_west_bus;
-    wire [NUM_CORES - 1:0] empty_west_bus;
+    wire [NUM_CORES - 1:0] men_west_bus;
+    wire [NUM_CORES - 1:0] full_west_bus;
+    wire [NUM_CORES - 1:0] wait_west_bus;
     
     // Wires for Northward Routing Communication
-    wire [NUM_CORES - 1:0] ren_north_bus;
-    wire [NUM_CORES - 1:0] empty_north_bus;
+    wire [NUM_CORES - 1:0] men_north_bus;
+    wire [NUM_CORES - 1:0] full_north_bus;
+    wire [NUM_CORES - 1:0] wait_north_bus;
     
     // Wires for Southward Routing Communication
-    wire [NUM_CORES - 1:0] ren_south_bus;
-    wire [NUM_CORES - 1:0] empty_south_bus;
+    wire [NUM_CORES - 1:0] men_south_bus;
+    wire [NUM_CORES - 1:0] full_south_bus;
+    wire [NUM_CORES - 1:0] wait_south_bus;
     
     // Wires for packets
     wire [PACKET_WIDTH-1:0] east_out_packets [NUM_CORES - 1:0];
@@ -85,8 +91,22 @@ module RANCNetworkGrid #(
     
     assign token_controller_error = | token_controller_errors;  // OR all TC errors to get final token_controller_error
     assign scheduler_error = | scheduler_errors;                // OR all SCH errors to get final scheduler error
-    assign ren_to_input_buffer = ren_west_bus[0];               // Read enable to the buffer that stores the input packets 入力パケットを格納するバッファへの読み取り許可
-    
+    //assign ren_to_input_buffer = men_west_bus[0];               // Read enable to the buffer that stores the input packets 入力パケットを格納するバッファへの読み取り許可
+    assign full_to_input_renGen = full_west_bus[0];
+    assign wait_to_input_renGen = wait_west_bus[0];
+    //assign wait_to_input_renGen = 0;
+    reg input_buffer_empty_r, input_buffer_empty_r2;
+    always @(posedge clk) begin
+        if(rst)begin
+            input_buffer_empty_r <= 0;
+            input_buffer_empty_r2 <= 0;
+        end
+        else begin
+            input_buffer_empty_r <= input_buffer_empty;
+            input_buffer_empty_r2 <= input_buffer_empty_r;
+        end
+    end
+
     for (curr_core = 0; curr_core < GRID_DIMENSION_X * GRID_DIMENSION_Y; curr_core = curr_core + 1) begin : gencore
         localparam right_edge = curr_core % GRID_DIMENSION_X == (GRID_DIMENSION_X - 1);
         localparam left_edge = curr_core % GRID_DIMENSION_X == 0;
@@ -117,30 +137,47 @@ module RANCNetworkGrid #(
                 .clk(clk),
                 .tick(tick),
                 .rst(rst),
-                .ren_in_west(left_edge ? 1'b0 : ren_east_bus[curr_core - 1]),
-                .ren_in_east(right_edge ? 1'b0 : ren_west_bus[curr_core + 1]),
-                .ren_in_north(top_edge ? 1'b0 : ren_south_bus[curr_core + GRID_DIMENSION_X]),
-                .ren_in_south(bottom_edge ? 1'b0 : ren_north_bus[curr_core - GRID_DIMENSION_X]),
-                .empty_in_west(curr_core == 0 ? input_buffer_empty : left_edge ? 1'b1 : empty_east_bus[curr_core - 1]),
-                .empty_in_east(right_edge ? 1'b1 : empty_west_bus[curr_core + 1]),
-                .empty_in_north(top_edge ? 1'b1 : empty_south_bus[curr_core + GRID_DIMENSION_X]),
-                .empty_in_south(bottom_edge ? 1'b1 : empty_north_bus[curr_core - GRID_DIMENSION_X]),
+                
+                .men_in_west(curr_core == 0 ? !input_buffer_empty_r2 : (left_edge ? 1'b0 : men_east_bus[curr_core - 1])),
+                .men_in_east(right_edge ? 1'b0 : men_west_bus[curr_core + 1]),
+                .men_in_north(top_edge ? 1'b0 : men_south_bus[curr_core + GRID_DIMENSION_X]),
+                .men_in_south(bottom_edge ? 1'b0 : men_north_bus[curr_core - GRID_DIMENSION_X]),
+                
+                .full_in_west(left_edge ? 1'b0 : full_east_bus[curr_core - 1]),
+                .full_in_east(right_edge ? 1'b0 : full_west_bus[curr_core + 1]),
+                .full_in_north(top_edge ? 1'b0 : full_south_bus[curr_core + GRID_DIMENSION_X]),
+                .full_in_south(bottom_edge ? 1'b0 : full_north_bus[curr_core - GRID_DIMENSION_X]),
+
+                .wait_in_west(left_edge ? 1'b0 : wait_east_bus[curr_core - 1]),
+                .wait_in_east(right_edge ? 1'b0 : wait_west_bus[curr_core + 1]),
+                .wait_in_north(top_edge ? 1'b0 : wait_south_bus[curr_core + GRID_DIMENSION_X]),
+                .wait_in_south(bottom_edge ? 1'b0 : wait_north_bus[curr_core - GRID_DIMENSION_X]),
+                
                 .east_in(right_edge ? {PACKET_WIDTH{1'b0}} : west_out_packets[curr_core + 1]),
                 .west_in(curr_core == 0 ? packet_in : left_edge ? {PACKET_WIDTH{1'b0}} : east_out_packets[curr_core - 1]),
                 .north_in(top_edge ? {PACKET_WIDTH-DX_WIDTH{1'b0}} : south_out_packets[curr_core + GRID_DIMENSION_X]),
                 .south_in(bottom_edge ? {PACKET_WIDTH-DX_WIDTH{1'b0}}: north_out_packets[curr_core - GRID_DIMENSION_X]),
-                .ren_out_west(ren_west_bus[curr_core]),
-                .ren_out_east(ren_east_bus[curr_core]),
-                .ren_out_north(ren_north_bus[curr_core]),
-                .ren_out_south(ren_south_bus[curr_core]),
-                .empty_out_west(empty_west_bus[curr_core]),
-                .empty_out_east(empty_east_bus[curr_core]),
-                .empty_out_north(empty_north_bus[curr_core]),
-                .empty_out_south(empty_south_bus[curr_core]),
+                
+                .men_out_west(men_west_bus[curr_core]),
+                .men_out_east(men_east_bus[curr_core]),
+                .men_out_north(men_north_bus[curr_core]),
+                .men_out_south(men_south_bus[curr_core]),
+                
+                .full_out_west(full_west_bus[curr_core]),
+                .full_out_east(full_east_bus[curr_core]),
+                .full_out_north(full_north_bus[curr_core]),
+                .full_out_south(full_south_bus[curr_core]),
+
+                .wait_out_west(wait_west_bus[curr_core]),
+                .wait_out_east(wait_east_bus[curr_core]),
+                .wait_out_north(wait_north_bus[curr_core]),
+                .wait_out_south(wait_south_bus[curr_core]),
+                
                 .east_out(east_out_packets[curr_core]),
                 .west_out(west_out_packets[curr_core]),
                 .north_out(north_out_packets[curr_core]),
                 .south_out(south_out_packets[curr_core]),
+                
                 .token_controller_error(token_controller_errors[curr_core]),
                 .scheduler_error(scheduler_errors[curr_core])
             );
@@ -159,30 +196,47 @@ module RANCNetworkGrid #(
             ) OutputBus (
                 .clk(clk),
                 .rst(rst),
-                .ren_in_west(left_edge ? 1'b0 : ren_east_bus[curr_core - 1]),
-                .ren_in_east(right_edge ? 1'b0 : ren_west_bus[curr_core + 1]),
-                .ren_in_north(top_edge ? 1'b0 : ren_south_bus[curr_core + GRID_DIMENSION_X]),
-                .ren_in_south(bottom_edge ? 1'b0 : ren_north_bus[curr_core - GRID_DIMENSION_X]),
-                .empty_in_west(curr_core == 0 ? input_buffer_empty : left_edge ? 1'b1 : empty_east_bus[curr_core - 1]),
-                .empty_in_east(right_edge ? 1'b1 : empty_west_bus[curr_core + 1]),
-                .empty_in_north(top_edge ? 1'b1 : empty_south_bus[curr_core + GRID_DIMENSION_X]),
-                .empty_in_south(bottom_edge ? 1'b1 : empty_north_bus[curr_core - GRID_DIMENSION_X]),
-                .ren_out_west(ren_west_bus[curr_core]),
-                .ren_out_east(ren_east_bus[curr_core]),
-                .ren_out_north(ren_north_bus[curr_core]),
-                .ren_out_south(ren_south_bus[curr_core]),
-                .empty_out_west(empty_west_bus[curr_core]),
-                .empty_out_east(empty_east_bus[curr_core]),
-                .empty_out_north(empty_north_bus[curr_core]),
-                .empty_out_south(empty_south_bus[curr_core]),
+                
+                .men_in_west(curr_core == 0 ? !input_buffer_empty_r2 : (left_edge ? 1'b0 : men_east_bus[curr_core - 1])),
+                .men_in_east(right_edge ? 1'b0 : men_west_bus[curr_core + 1]),
+                .men_in_north(top_edge ? 1'b0 : men_south_bus[curr_core + GRID_DIMENSION_X]),
+                .men_in_south(bottom_edge ? 1'b0 : men_north_bus[curr_core - GRID_DIMENSION_X]),
+                
+                .full_in_west(left_edge ? 1'b0 : full_east_bus[curr_core - 1]),
+                .full_in_east(right_edge ? 1'b0 : full_west_bus[curr_core + 1]),
+                .full_in_north(top_edge ? 1'b0 : full_south_bus[curr_core + GRID_DIMENSION_X]),
+                .full_in_south(bottom_edge ? 1'b0 : full_north_bus[curr_core - GRID_DIMENSION_X]),
+
+                .wait_in_west(left_edge ? 1'b0 : wait_east_bus[curr_core - 1]),
+                .wait_in_east(right_edge ? 1'b0 : wait_west_bus[curr_core + 1]),
+                .wait_in_north(top_edge ? 1'b0 : wait_south_bus[curr_core + GRID_DIMENSION_X]),
+                .wait_in_south(bottom_edge ? 1'b0 : wait_north_bus[curr_core - GRID_DIMENSION_X]),
+                
+                .men_out_west(men_west_bus[curr_core]),
+                .men_out_east(men_east_bus[curr_core]),
+                .men_out_north(men_north_bus[curr_core]),
+                .men_out_south(men_south_bus[curr_core]),
+                
+                .full_out_west(full_west_bus[curr_core]),
+                .full_out_east(full_east_bus[curr_core]),
+                .full_out_north(full_north_bus[curr_core]),
+                .full_out_south(full_south_bus[curr_core]),
+
+                .wait_out_west(wait_west_bus[curr_core]),
+                .wait_out_east(wait_east_bus[curr_core]),
+                .wait_out_north(wait_north_bus[curr_core]),
+                .wait_out_south(wait_south_bus[curr_core]),
+                
                 .east_in(right_edge ? {PACKET_WIDTH{1'b0}} : west_out_packets[curr_core + 1]),
                 .west_in(curr_core == 0 ? packet_in : left_edge ? {PACKET_WIDTH{1'b0}} : east_out_packets[curr_core - 1]),
                 .north_in(top_edge ? {PACKET_WIDTH-DX_WIDTH{1'b0}} : south_out_packets[curr_core + GRID_DIMENSION_X]),      // North In From Next North's South Out
                 .south_in(bottom_edge ? {PACKET_WIDTH-DX_WIDTH{1'b0}} : north_out_packets[curr_core - GRID_DIMENSION_X]),      // South In From Next South's North Out
+                
                 .east_out(east_out_packets[curr_core]),     // East Out, Next East's West In
                 .west_out(west_out_packets[curr_core]),     // West Out, Next West's East In
                 .north_out(north_out_packets[curr_core]),    // North Out, Next North's South In
                 .south_out(south_out_packets[curr_core]),    // South Out, Next South's North In
+                
                 .packet_out(packet_out),
                 .packet_out_valid(packet_out_valid),
                 .token_controller_error(token_controller_errors[curr_core]),

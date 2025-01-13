@@ -31,26 +31,42 @@ module Core #(
     input clk,
     input tick,
     input rst,
-    input ren_in_west,
-    input ren_in_east,
-    input ren_in_north,
-    input ren_in_south,
-    input empty_in_west,
-    input empty_in_east,
-    input empty_in_north,
-    input empty_in_south,
+    
+    input men_in_west,
+    input men_in_east,
+    input men_in_north,
+    input men_in_south,
+    
+    input full_in_west,
+    input full_in_east,
+    input full_in_north,
+    input full_in_south,
+
+    input wait_in_west,
+    input wait_in_east,
+    input wait_in_north,
+    input wait_in_south,
+    
     input [PACKET_WIDTH-1:0] east_in,
     input [PACKET_WIDTH-1:0] west_in,
     input [PACKET_WIDTH-(DX_MSB-DX_LSB+1)-1:0] north_in,
     input [PACKET_WIDTH-(DX_MSB-DX_LSB+1)-1:0] south_in,
-    output ren_out_west,
-    output ren_out_east,
-    output ren_out_north,
-    output ren_out_south,
-    output empty_out_west,
-    output empty_out_east,
-    output empty_out_north,
-    output empty_out_south,
+    
+    output men_out_west,
+    output men_out_east,
+    output men_out_north,
+    output men_out_south,
+    
+    output full_out_west,
+    output full_out_east,
+    output full_out_north,
+    output full_out_south,
+
+    output wait_out_west,
+    output wait_out_east,
+    output wait_out_north,
+    output wait_out_south,
+    
     output [PACKET_WIDTH-1:0] east_out,
     output [PACKET_WIDTH-1:0] west_out,
     output [PACKET_WIDTH-(DX_MSB-DX_LSB+1)-1:0] north_out,
@@ -100,7 +116,7 @@ module Core #(
     wire scheduler_wen;
     
     // Router -> Token Controller
-    wire local_buffers_full;
+    wire local_buffer_full;
     
 Scheduler #(
     .NUM_AXONS(NUM_AXONS),
@@ -155,7 +171,7 @@ TokenController #(
     .axon_spikes(axon_spikes), 
     .synapses(CSRAM_data[CSRAM_SYNAPTIC_CONNECTIONS_BOTTOM_INDEX +: NUM_AXONS]), //from CSRAM
     .spike_in(neuron_block_spike),
-    .local_buffers_full(local_buffers_full),
+    .local_buffers_full(local_buffer_full),
     .error(token_controller_error),//to outside
     .scheduler_set(scheduler_set), //to scheduler
     .scheduler_clr(scheduler_clr),//to scheduler
@@ -202,35 +218,52 @@ Router #(
 ) Router (
     .clk(clk),
     .rst(rst),
+    
     .din_local(CSRAM_data[PACKET_WIDTH-1:0]),
     .din_local_wen(router_spike),//from controller
     .din_west(west_in),//from outside
     .din_east(east_in),//from outside
     .din_north(north_in),//from outside
     .din_south(south_in),//from outside
-    .ren_in_west(ren_in_west),//from outside
-    .ren_in_east(ren_in_east),//from outside
-    .ren_in_north(ren_in_north),//from outside
-    .ren_in_south(ren_in_south),//from outside
-    .empty_in_west(empty_in_west),//from outside
-    .empty_in_east(empty_in_east),//from outside
-    .empty_in_north(empty_in_north),//from outside
-    .empty_in_south(empty_in_south),//from outside
+    
+    .men_in_west(men_in_west),//from outside
+    .men_in_east(men_in_east),//from outside
+    .men_in_north(men_in_north),//from outside
+    .men_in_south(men_in_south),//from outside
+    
+    .full_in_west(full_in_west),//from outside
+    .full_in_east(full_in_east),//from outside
+    .full_in_north(full_in_north),//from outside
+    .full_in_south(full_in_south),//from outside
+
+    .wait_in_west(wait_in_west),
+    .wait_in_east(wait_in_east),
+    .wait_in_north(wait_in_north),
+    .wait_in_south(wait_in_south),
+    
     .dout_west(west_out),//to outside
     .dout_east(east_out),//to outside
     .dout_north(north_out),//to outside
     .dout_south(south_out),//to outside
     .dout_local(scheduler_packet),//to scheduler
     .dout_wen_local(scheduler_wen),//to scheduler
-    .ren_out_west(ren_out_west),//to outside
-    .ren_out_east(ren_out_east),//to outside
-    .ren_out_north(ren_out_north),//to outside
-    .ren_out_south(ren_out_south),//to outside
-    .empty_out_west(empty_out_west),//to outside
-    .empty_out_east(empty_out_east),//to outside
-    .empty_out_north(empty_out_north),//to outside
-    .empty_out_south(empty_out_south),//to outside
-    .local_buffers_full(local_buffers_full)//to controller
+    
+    .men_out_west(men_out_west),//to outside
+    .men_out_east(men_out_east),//to outside
+    .men_out_north(men_out_north),//to outside
+    .men_out_south(men_out_south),//to outside
+    
+    .full_out_west(full_out_west),//to outside
+    .full_out_east(full_out_east),//to outside
+    .full_out_north(full_out_north),//to outside
+    .full_out_south(full_out_south),//to outside
+
+    .wait_out_west(wait_out_west),
+    .wait_out_east(wait_out_east),
+    .wait_out_north(wait_out_north),
+    .wait_out_south(wait_out_south),
+    
+    .local_buffer_full(local_buffer_full)//to controller
 );
 
 endmodule

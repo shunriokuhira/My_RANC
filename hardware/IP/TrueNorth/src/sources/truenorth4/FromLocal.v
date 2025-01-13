@@ -64,12 +64,16 @@ module FromLocal #(
         .ren(ren)//out
     );
 
+    wire din_zero;
+    assign din_zero = (dout == 30'b0) ? 1 : 0;
+
     wire signed [DX_MSB:DX_LSB] dx;
     assign dx = dout[DX_MSB:DX_LSB];
     
     assign dout_east = dout;
-    assign men_east = dx < 0 ? 0 : 1; // if dx == 0 going east
-    
+    //assign men_east = dx < 0 ? 0 : 1; // if dx == 0 going east
+    assign men_east = din_zero ? 0 : ((dx > 0)||(dx == 0) ? 1 : 0);
+
     assign dout_west = dout;
     assign men_west = dx < 0 ? 1 : 0;
     

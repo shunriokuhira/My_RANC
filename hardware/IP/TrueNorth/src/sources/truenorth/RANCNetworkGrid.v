@@ -86,7 +86,17 @@ module RANCNetworkGrid #(
     assign token_controller_error = | token_controller_errors;  // OR all TC errors to get final token_controller_error
     assign scheduler_error = | scheduler_errors;                // OR all SCH errors to get final scheduler error
     assign ren_to_input_buffer = ren_west_bus[0];               // Read enable to the buffer that stores the input packets 入力パケットを格納するバッファへの読み取り許可
-    
+    reg input_buffer_empty_r, input_buffer_empty_r2;
+    always @(posedge clk) begin
+        if(rst)begin
+            input_buffer_empty_r <= 0;
+            input_buffer_empty_r2 <= 0;
+        end
+        else begin
+            input_buffer_empty_r <= input_buffer_empty;
+            input_buffer_empty_r2 <= input_buffer_empty_r;
+        end
+    end
     for (curr_core = 0; curr_core < GRID_DIMENSION_X * GRID_DIMENSION_Y; curr_core = curr_core + 1) begin : gencore
         localparam right_edge = curr_core % GRID_DIMENSION_X == (GRID_DIMENSION_X - 1);
         localparam left_edge = curr_core % GRID_DIMENSION_X == 0;
@@ -132,7 +142,7 @@ module RANCNetworkGrid #(
                 .north_in(top_edge ? {PACKET_WIDTH-DX_WIDTH{1'b0}} : south_out_packets[curr_core + GRID_DIMENSION_X]),
                 .south_in(bottom_edge ? {PACKET_WIDTH-DX_WIDTH{1'b0}}: north_out_packets[curr_core - GRID_DIMENSION_X]),
 
-                .men_in_west(curr_core == 0 ? !input_buffer_empty : left_edge ? 1'b0 : men_east_bus[curr_core - 1]),//I don't know
+                .men_in_west(curr_core == 0 ? !input_buffer_empty_r2 : left_edge ? 1'b0 : men_east_bus[curr_core - 1]),//I don't know
                 .men_in_east(right_edge ? 1'b0 : men_west_bus[curr_core + 1]),
                 .men_in_north(top_edge ? 1'b0 : men_north_bus[curr_core + GRID_DIMENSION_X]),
                 .men_in_south(bottom_edge ? 1'b0 : men_south_bus[curr_core - GRID_DIMENSION_X]),
@@ -185,7 +195,7 @@ module RANCNetworkGrid #(
                 .empty_in_north(top_edge ? 1'b1 : empty_south_bus[curr_core + GRID_DIMENSION_X]),
                 .empty_in_south(bottom_edge ? 1'b1 : empty_north_bus[curr_core - GRID_DIMENSION_X]),
 
-                .men_in_west(curr_core ==0 ? !input_buffer_empty : left_edge ? 1'b0 : men_east_bus[curr_core - 1]),//I don't know
+                .men_in_west(curr_core ==0 ? !input_buffer_empty_r2 : left_edge ? 1'b0 : men_east_bus[curr_core - 1]),//I don't know
                 .men_in_east(right_edge ? 1'b0 : men_west_bus[curr_core + 1]),
                 .men_in_north(top_edge ? 1'b0 : men_north_bus[curr_core + GRID_DIMENSION_X]),
                 .men_in_south(bottom_edge ? 1'b0 : men_south_bus[curr_core - GRID_DIMENSION_X]),

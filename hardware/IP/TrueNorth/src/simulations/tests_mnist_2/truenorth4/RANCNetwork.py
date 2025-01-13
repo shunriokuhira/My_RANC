@@ -4,7 +4,7 @@ from collections import namedtuple
 from myhdl import Cosimulation
 
 
-cmd = ('iverilog -o RANCNetwork.o -I ../../../sources/truenorth -Dgrid_dimension_x=%s '
+cmd = ('iverilog -o RANCNetwork.o -I ../../../sources/truenorth4 -Dgrid_dimension_x=%s '
        '-Dgrid_dimension_y=%s -Doutput_core_x_coordinate=%s '
        '-Doutput_core_y_coordinate=%s -Dnum_outputs=%s -Dnum_neurons=%s '
        '-Dnum_axons=%s -Dnum_ticks=%s -Dnum_weights=%s -Dnum_reset_modes=%s '
@@ -13,7 +13,7 @@ cmd = ('iverilog -o RANCNetwork.o -I ../../../sources/truenorth -Dgrid_dimension
        '-Dinput_buffer_depth=%s -Drouter_buffer_depth=%s '
        '-Dmemory_filepath=\\"%s\\" -Dmaximum_number_of_packets=%s '
        '-Dc_s00_axis_tdata_width=%s -s test_RANCNetwork '
-       '../../../sources/truenorth/*.v ../../tests_mnist/test_RANCNetwork.v')
+       '../../../sources/truenorth4/*.v ../../tests_mnist/test_RANCNetwork.v')
 
 
 InputPorts = namedtuple('input_ports', 'clk, rst, tick, s00_axis_aclk,'
