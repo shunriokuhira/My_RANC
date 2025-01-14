@@ -27,7 +27,6 @@ module PathDecoder3Way#(
     parameter ADD = 1//eastなら-1
 )(
     input [DATA_WIDTH-1:0] din,
-    input empty,
     output [DATA_WIDTH-1:0] dout_routing,
     output men_routing,
     output [DATA_WIDTH-1-(DX_MSB-DY_MSB):0] dout_north,
@@ -47,14 +46,14 @@ module PathDecoder3Way#(
     assign dx_plus_add = dx + ADD;
     
     assign dout_routing = {dx_plus_add, din[DX_LSB-1:0]};
-    assign men_routing = empty ? 0 : (dx == 0 ? 0 : 1);
+    assign men_routing = din_zero ? 0 : (dx == 0 ? 0 : 1);
     
     //din_zero考慮しないとゼロパケットに反応してさいしょからmen_northが1のままになる
     assign dout_north = din[DX_LSB-1:0];
     //assign men_north = dy >= 0 ? (dx == 0 ? 1 : 0) : 0;
-    assign men_north = empty ? 0 : (dy >= 0 ? (dx == 0 ? 1 : 0) : 0);
+    assign men_north = din_zero ? 0 : (dy >= 0 ? (dx == 0 ? 1 : 0) : 0);
 
     assign dout_south = din[DX_LSB-1:0];
-    assign men_south = empty ? 0 : (dy < 0 ? (dx == 0 ? 1 : 0) : 0);
+    assign men_south = din_zero ? 0 : (dy < 0 ? (dx == 0 ? 1 : 0) : 0);
 
 endmodule

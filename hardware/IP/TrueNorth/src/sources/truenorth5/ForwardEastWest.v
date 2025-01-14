@@ -88,14 +88,14 @@ module ForwardEastWest #(
         .wait_to_local(wait_to_local)
     );
     
-    renGen renGen(
-        .clk(clk),
-        .rst(rst),
-        .empty(buffer_empty),
-        .full(full),
-        .ren(ren),
-        .wait_renGen(wait_in)
-    );
+    // renGen renGen(
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .empty(buffer_empty),
+    //     .full(full),
+    //     .ren(ren),
+    //     .wait_renGen(wait_in)
+    // );
     
     buffer #(
         .DATA_WIDTH(PACKET_WIDTH),
@@ -103,9 +103,11 @@ module ForwardEastWest #(
     ) routing_buffer (
         .clk(clk),
         .rst(rst),
+        .wait_in(wait_in),//read_en
+        .full_in(full),
         .din(merge_out),
         .din_valid(merge_out_wen),
-        .read_en(ren),
+        //.read_en(),
         .dout(buffer_out),
         .empty(buffer_empty),
         .full(buffer_full)
@@ -120,7 +122,6 @@ module ForwardEastWest #(
         .ADD(ADD)
     ) PathDecoder (
         .din(buffer_out),
-        .empty(buffer_empty),
 
         .dout_routing(dout_routing),
         .dout_north(dout_north),

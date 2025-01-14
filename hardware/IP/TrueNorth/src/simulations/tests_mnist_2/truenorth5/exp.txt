@@ -1,0 +1,3 @@
+merge_en付き
+renGenけした
+merge moduleは交互にWaitを出力ラウンドロビンすけじゅーる

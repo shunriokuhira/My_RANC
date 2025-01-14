@@ -98,6 +98,7 @@ module buffer#(
                 end
                 else begin
                     if (!full && din_valid && !din_zero && !write_twice) begin
+                    //if (!full && din_valid) begin
                         data[write_pointer] = din;
                         write_pointer = write_pointer + 1;
                         status_counter = status_counter + 1;
@@ -108,9 +109,9 @@ module buffer#(
                         read_pointer = read_pointer + 1;
                         status_counter = status_counter - 1;
                     end
-                    if(write_twice)begin
-                        output_data <= 0;
-                    end
+                    // if(write_twice)begin
+                    //     output_data <= 0;
+                    // end
                 end
             end
     //     end
