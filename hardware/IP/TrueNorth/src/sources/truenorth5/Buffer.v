@@ -29,8 +29,7 @@ module buffer#(
 
     localparam BUFFER_WIDTH = $clog2(BUFFER_DEPTH);
 
-    wire din_zero;
-    assign din_zero = (din == 0) ? 1 : 0;
+
     reg [DATA_WIDTH-1:0] data [BUFFER_DEPTH-1:0];
     reg [BUFFER_WIDTH-1:0] read_pointer, write_pointer;
     reg [BUFFER_WIDTH:0] status_counter;
@@ -47,8 +46,13 @@ module buffer#(
     assign full = status_counter == BUFFER_DEPTH;
     assign dout = output_data;
 
+    wire din_zero;
+    assign din_zero = ((din == 0) && (din_before == 0)) ? 1 : 0;
+    //assign din_zero = (din == 0) ? 1 : 0;
     wire write_twice;//バッファが同じパケットを二回連続して書き込もうとしたことを検知
+    wire write_triple;
     assign write_twice = (din == din_before2) ? 1 : 0;
+    assign write_triple = ((din == din_before) && (din_before == din_before2)) ? 1 : 0;
     always @(posedge clk) begin
         if(rst)begin
             din_before <= 0;

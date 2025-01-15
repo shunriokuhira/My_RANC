@@ -20,146 +20,146 @@ module Merge3#(
 
 
 //merge_v3
-// reg[3:0] state = 1;
-// localparam wait_routing = 0, wait_east = 1, wait_west = 2;
-// always @(negedge clk) begin
-//     if(rst)begin
-//         merge_out <= 0;
-//         merge_wen <= 0;
-//         wait_to_routing <= 0;
-//         wait_to_east <= 0;
-//         wait_to_west <= 0;
-//         state <= wait_east;
-//     end
-//     else if(!full)begin
-//         if(men_from_routing & !men_from_east & !men_from_west)begin//routing側だけからリクエストがきたとき
-//             merge_out <= din_from_routing;
-//             merge_wen <= 1;
-//             wait_to_routing <= 0;
-//             wait_to_east <= 0;
-//             wait_to_west <= 0;
-//             state <= wait_routing;
-//         end
-//         else if(!men_from_routing & men_from_east & !men_from_west)begin//東側だけからリクエストきたとき
-//             merge_out <= din_from_east;
-//             merge_wen <= 1;
-//             wait_to_routing <= 0;
-//             wait_to_east <= 0;
-//             wait_to_west <= 0;
-//             state <= wait_east;
-//         end
-//         else if(!men_from_routing & !men_from_east & men_from_west)begin//西側だけからリクエストきたとき
-//             merge_out <= din_from_west;
-//             merge_wen <= 1;
-//             wait_to_routing <= 0;
-//             wait_to_east <= 0;
-//             wait_to_west <= 0;
-//             state <= wait_west;
-//         end
-//         else if(men_from_routing & men_from_east & !men_from_west)begin//routing側と東の競合
-//             case(state)
-//                 wait_routing:begin
-//                     wait_to_routing <= 1;
-//                     wait_to_east <= 0;
-//                     wait_to_west <= 0;
-//                     merge_out <= din_from_east;//東からのパケットを優先してあげる
-//                     merge_wen <= 1;
-//                     state <= wait_east;
-//                 end
+reg[3:0] state = 1;
+localparam wait_routing = 0, wait_east = 1, wait_west = 2;
+always @(negedge clk) begin
+    if(rst)begin
+        merge_out <= 0;
+        merge_wen <= 0;
+        wait_to_routing <= 0;
+        wait_to_east <= 0;
+        wait_to_west <= 0;
+        state <= wait_east;
+    end
+    else if(!full)begin
+        if(men_from_routing & !men_from_east & !men_from_west)begin//routing側だけからリクエストがきたとき
+            merge_out <= din_from_routing;
+            merge_wen <= 1;
+            wait_to_routing <= 0;
+            wait_to_east <= 0;
+            wait_to_west <= 0;
+            state <= wait_routing;
+        end
+        else if(!men_from_routing & men_from_east & !men_from_west)begin//東側だけからリクエストきたとき
+            merge_out <= din_from_east;
+            merge_wen <= 1;
+            wait_to_routing <= 0;
+            wait_to_east <= 0;
+            wait_to_west <= 0;
+            state <= wait_east;
+        end
+        else if(!men_from_routing & !men_from_east & men_from_west)begin//西側だけからリクエストきたとき
+            merge_out <= din_from_west;
+            merge_wen <= 1;
+            wait_to_routing <= 0;
+            wait_to_east <= 0;
+            wait_to_west <= 0;
+            state <= wait_west;
+        end
+        else if(men_from_routing & men_from_east & !men_from_west)begin//routing側と東の競合
+            case(state)
+                wait_routing:begin
+                    wait_to_routing <= 1;
+                    wait_to_east <= 0;
+                    wait_to_west <= 0;
+                    merge_out <= din_from_east;//東からのパケットを優先してあげる
+                    merge_wen <= 1;
+                    state <= wait_east;
+                end
 
-//                 wait_east:begin
-//                     wait_to_routing <= 0;
-//                     wait_to_east <= 1;
-//                     wait_to_west <= 0;
-//                     merge_out <= din_from_routing;
-//                     merge_wen <= 1;
-//                     state <= wait_routing;
-//                 end
-//             endcase
-//         end
-//         else if(men_from_routing & !men_from_east & men_from_west)begin//routing側と西の競合
-//             case(state)
-//                 wait_routing:begin
-//                     wait_to_routing <= 1;
-//                     wait_to_east <= 0;
-//                     wait_to_west <= 0;
-//                     merge_out <= din_from_west;
-//                     merge_wen <= 1;
-//                     state <= wait_west;
-//                 end
+                wait_east:begin
+                    wait_to_routing <= 0;
+                    wait_to_east <= 1;
+                    wait_to_west <= 0;
+                    merge_out <= din_from_routing;
+                    merge_wen <= 1;
+                    state <= wait_routing;
+                end
+            endcase
+        end
+        else if(men_from_routing & !men_from_east & men_from_west)begin//routing側と西の競合
+            case(state)
+                wait_routing:begin
+                    wait_to_routing <= 1;
+                    wait_to_east <= 0;
+                    wait_to_west <= 0;
+                    merge_out <= din_from_west;
+                    merge_wen <= 1;
+                    state <= wait_west;
+                end
 
-//                 wait_west:begin
-//                     wait_to_routing <= 0;
-//                     wait_to_east <= 0;
-//                     wait_to_west <= 1;
-//                     merge_out <= din_from_routing;
-//                     merge_wen <= 1;
-//                     state <= wait_routing;
-//                 end
-//             endcase
-//         end
-//         else if(!men_from_routing & men_from_east & men_from_west)begin//西と東での競合
-//             case(state)
-//                 wait_east:begin
-//                     wait_to_routing <= 0;
-//                     wait_to_east <= 1;
-//                     wait_to_west <= 0;
-//                     merge_out <= din_from_west;
-//                     merge_wen <= 1;
-//                     state <= wait_west;
-//                 end
+                wait_west:begin
+                    wait_to_routing <= 0;
+                    wait_to_east <= 0;
+                    wait_to_west <= 1;
+                    merge_out <= din_from_routing;
+                    merge_wen <= 1;
+                    state <= wait_routing;
+                end
+            endcase
+        end
+        else if(!men_from_routing & men_from_east & men_from_west)begin//西と東での競合
+            case(state)
+                wait_east:begin
+                    wait_to_routing <= 0;
+                    wait_to_east <= 1;
+                    wait_to_west <= 0;
+                    merge_out <= din_from_west;
+                    merge_wen <= 1;
+                    state <= wait_west;
+                end
 
-//                 wait_west:begin
-//                     wait_to_routing <= 0;
-//                     wait_to_east <= 0;
-//                     wait_to_west <= 1;
-//                     merge_out <= din_from_east;
-//                     merge_wen <= 1;
-//                     state <= wait_east;
-//                 end
-//             endcase
-//         end
-//         else if(men_from_routing & men_from_east & men_from_west)begin//すべて競合したとき
-//             case(state)
-//                 wait_routing:begin
-//                     wait_to_routing <= 1;
-//                     wait_to_east <= 0;
-//                     wait_to_west <= 1;
-//                     merge_out <= din_from_east;
-//                     merge_wen <= 1;
-//                     state <= wait_east;
-//                 end
+                wait_west:begin
+                    wait_to_routing <= 0;
+                    wait_to_east <= 0;
+                    wait_to_west <= 1;
+                    merge_out <= din_from_east;
+                    merge_wen <= 1;
+                    state <= wait_east;
+                end
+            endcase
+        end
+        else if(men_from_routing & men_from_east & men_from_west)begin//すべて競合したとき
+            case(state)
+                wait_routing:begin
+                    wait_to_routing <= 1;
+                    wait_to_east <= 0;
+                    wait_to_west <= 1;
+                    merge_out <= din_from_east;
+                    merge_wen <= 1;
+                    state <= wait_east;
+                end
 
-//                 wait_east:begin
-//                     wait_to_routing <= 1;
-//                     wait_to_east <= 1;
-//                     wait_to_west <= 0;
-//                     merge_out <= din_from_west;
-//                     merge_wen <= 1;
-//                     state <= wait_west;
-//                 end
+                wait_east:begin
+                    wait_to_routing <= 1;
+                    wait_to_east <= 1;
+                    wait_to_west <= 0;
+                    merge_out <= din_from_west;
+                    merge_wen <= 1;
+                    state <= wait_west;
+                end
 
-//                 wait_west:begin
-//                     wait_to_routing <= 0;
-//                     wait_to_east <= 1;
-//                     wait_to_west <= 1;
-//                     merge_out <= din_from_routing;
-//                     merge_wen <= 1;
-//                     state <= wait_routing;
-//                 end
-//             endcase
-//         end
-//         else begin
-//             wait_to_routing <= 0;
-//             wait_to_east <= 0;
-//             wait_to_west <= 0;
-//             merge_out <= 0;
-//             merge_wen <= 0;
-//             state <= wait_east;
-//         end
+                wait_west:begin
+                    wait_to_routing <= 0;
+                    wait_to_east <= 1;
+                    wait_to_west <= 1;
+                    merge_out <= din_from_routing;
+                    merge_wen <= 1;
+                    state <= wait_routing;
+                end
+            endcase
+        end
+        else begin
+            wait_to_routing <= 0;
+            wait_to_east <= 0;
+            wait_to_west <= 0;
+            merge_out <= 0;
+            merge_wen <= 0;
+            state <= wait_east;
+        end
         
-//     end
-// end
+    end
+end
 
 
 
@@ -309,57 +309,57 @@ module Merge3#(
 // end
 
 
-
-always @(negedge clk) begin
-    if(rst)begin
-        merge_out <= 0;
-        merge_wen <= 0;
-        wait_to_east <= 0;
-        wait_to_west <= 0;
-        wait_to_routing <= 0;
-    end
-    else if(!full)begin//マージ出力先のバッファが満タンでない
-        if(men_from_routing)begin//このフラグが立ってるあいだはパケット取り込める
-            if(men_from_east)begin//外部パケット取り込み中にforwardeastモジュールからパケット取り込みのリクエストがきたとき
-                wait_to_east <= 1;
-            end
-            else if(men_from_west)begin
-                wait_to_west <= 1;
-            end
-            merge_out <= din_from_routing;//外部パケット取り込み
-            merge_wen <= 1;//バッファへの書き込み許可
-            wait_to_routing <= 0;
-        end
-        else if(men_from_east)begin
-            if(men_from_routing)begin
-                wait_to_routing <= 1;
-            end
-            else if(men_from_west)begin
-                wait_to_west <= 1;
-            end
-            merge_out <= din_from_east;
-            merge_wen <= 1;
-            wait_to_east <= 0;
-        end
-        else if(men_from_west)begin
-            if(men_from_routing)begin
-                wait_to_routing <= 1;
-            end
-            else if(men_from_east)begin
-                wait_to_east <= 1;
-            end
-            merge_out <= din_from_west;
-            merge_wen <= 1;
-            wait_to_west <= 0;
-        end
-        else begin
-            merge_wen <= 0;
-            merge_out <= 0;
-            wait_to_east <= 0;
-            wait_to_west <= 0;
-            wait_to_routing <= 0;
-        end
-    end
-end
+//merge_v1
+// always @(negedge clk) begin
+//     if(rst)begin
+//         merge_out <= 0;
+//         merge_wen <= 0;
+//         wait_to_east <= 0;
+//         wait_to_west <= 0;
+//         wait_to_routing <= 0;
+//     end
+//     else if(!full)begin//マージ出力先のバッファが満タンでない
+//         if(men_from_routing)begin//このフラグが立ってるあいだはパケット取り込める
+//             if(men_from_east)begin//外部パケット取り込み中にforwardeastモジュールからパケット取り込みのリクエストがきたとき
+//                 wait_to_east <= 1;
+//             end
+//             else if(men_from_west)begin
+//                 wait_to_west <= 1;
+//             end
+//             merge_out <= din_from_routing;//外部パケット取り込み
+//             merge_wen <= 1;//バッファへの書き込み許可
+//             wait_to_routing <= 0;
+//         end
+//         else if(men_from_east)begin
+//             if(men_from_routing)begin
+//                 wait_to_routing <= 1;
+//             end
+//             else if(men_from_west)begin
+//                 wait_to_west <= 1;
+//             end
+//             merge_out <= din_from_east;
+//             merge_wen <= 1;
+//             wait_to_east <= 0;
+//         end
+//         else if(men_from_west)begin
+//             if(men_from_routing)begin
+//                 wait_to_routing <= 1;
+//             end
+//             else if(men_from_east)begin
+//                 wait_to_east <= 1;
+//             end
+//             merge_out <= din_from_west;
+//             merge_wen <= 1;
+//             wait_to_west <= 0;
+//         end
+//         else begin
+//             merge_wen <= 0;
+//             merge_out <= 0;
+//             wait_to_east <= 0;
+//             wait_to_west <= 0;
+//             wait_to_routing <= 0;
+//         end
+//     end
+// end
 
 endmodule
