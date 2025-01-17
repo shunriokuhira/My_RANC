@@ -20,6 +20,7 @@ module ForwardEastWest #(
 )(
     input clk,
     input rst,
+    //input buffer_rst,
     
     input [PACKET_WIDTH-1:0] din_routing,
     input [PACKET_WIDTH-1:0] din_token_controller,
@@ -60,7 +61,7 @@ module ForwardEastWest #(
 
     //-----to renGen------
     wire wait_in;
-    wire full;
+    wire full, valid;
     assign wait_in = wait_from_routing | wait_from_north | wait_from_south;
     assign full = full_from_routing | full_from_north | full_from_south;
     //--------------------
@@ -103,6 +104,7 @@ module ForwardEastWest #(
     ) routing_buffer (
         .clk(clk),
         .rst(rst),
+        //.buffer_rst(buffer_rst),
         .wait_in(wait_in),//read_en
         .full_in(full),
         .din(merge_out),
@@ -110,6 +112,7 @@ module ForwardEastWest #(
         //.read_en(),
         .dout(buffer_out),
         .empty(buffer_empty),
+        .valid(valid),
         .full(buffer_full)
     );
 
@@ -122,6 +125,8 @@ module ForwardEastWest #(
         .ADD(ADD)
     ) PathDecoder (
         .din(buffer_out),
+        .empty(buffer_empty),
+        .valid(valid),
 
         .dout_routing(dout_routing),
         .dout_north(dout_north),

@@ -21,14 +21,16 @@ module buffer#(
     input full_in,
     input [DATA_WIDTH-1:0] din,
     input din_valid,
+    //input buffer_rst,
     //input read_en,
     output [DATA_WIDTH-1:0] dout,
     output empty,
+    output reg valid,
     output full
 );
 
     localparam BUFFER_WIDTH = $clog2(BUFFER_DEPTH);
-
+        
 
     reg [DATA_WIDTH-1:0] data [BUFFER_DEPTH-1:0];
     reg [BUFFER_WIDTH-1:0] read_pointer, write_pointer;
@@ -58,12 +60,20 @@ module buffer#(
             din_before <= 0;
             din_before2 <= 0;
         end
-        else if(din_valid)begin
+        // else if(din_valid)begin
+        //     din_before <= din;
+        // end
+        else begin
             din_before <= din;
             din_before2 <= din_before;
         end
     end
 
+    // always @(posedge clk) begin
+    //     if(buffer_rst)begin
+    //         output_data <= 0;
+    //     end
+    // end
     integer i;
     initial begin
         for (i = 0; i < BUFFER_DEPTH; i = i + 1)
@@ -74,6 +84,15 @@ module buffer#(
         output_data <= 0;
     end
 
+    
+    always @(posedge clk) begin
+        if(rst)begin
+            valid <= 0;
+        end
+        else begin
+            valid <= (!wait_in & !full_in & !empty & ren);
+        end
+    end
 
     always@(posedge clk) begin
         if (rst) begin
@@ -84,8 +103,8 @@ module buffer#(
             output_data <= 0;
         end
         else begin
-            if (!full && din_valid && !write_twice) begin
-            //if (!full && din_valid) begin
+            //if (!full && din_valid && !write_twice) begin
+            if (!full && din_valid) begin
                 data[write_pointer] = din;
                 write_pointer = write_pointer + 1;
                 status_counter = status_counter + 1;
@@ -96,23 +115,25 @@ module buffer#(
                 read_pointer = read_pointer + 1;
                 status_counter = status_counter - 1;
             end
-            if(write_twice || din_zero)begin
-                output_data <= 0;
-            end
+            // if(write_twice || din_zero)begin
+            //     output_data <= 0;
+            // end
         end
     end
+    wire ren;
+    assign ren = empty ? 0 : 1; 
 
-    reg ren;
-    always @(negedge clk) begin
-        if(rst)begin
-            ren <= 0;
-        end
-        else if(!empty)begin
-            ren <= 1;
-        end
-        else begin
-            ren <= 0;
-        end
-    end
+    // reg ren;
+    // always @(posedge clk) begin
+    //     if(rst)begin
+    //         ren <= 0;
+    //     end
+    //     else if(!empty)begin
+    //         ren <= 1;
+    //     end
+    //     else begin
+    //         ren <= 0;
+    //     end
+    // end
 
 endmodule

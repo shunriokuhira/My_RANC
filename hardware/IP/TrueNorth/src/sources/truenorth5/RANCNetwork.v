@@ -131,6 +131,7 @@ module RANCNetwork #
     ) buffer_inst (
         .clk(clk),
         .rst(rst),
+        //.buffer_rst(1'b0),
         .wait_in(wait_to_input_buffer),
         .full_in(full_to_input_buffer),
         .din(packet_axi_to_buffer),//RANCNetwork_S00_AXISモジュールから来たパケット
@@ -138,6 +139,7 @@ module RANCNetwork #
         //.read_en(ren_to_input_buffer),
         .dout(packet_buffer_to_RANC),//output
         .empty(buffer_empty),//output
+        .valid(),
         .full(buffer_full)//output
     );
 

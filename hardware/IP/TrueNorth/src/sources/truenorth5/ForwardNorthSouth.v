@@ -19,6 +19,9 @@ module ForwardNorthSouth #(
 )(
     input clk,
     input rst,
+
+   // input buffer_rst,
+
     input [PACKET_WIDTH-1:0] din_routing,
     input [PACKET_WIDTH-1:0] din_east,
     input [PACKET_WIDTH-1:0] din_west,
@@ -55,7 +58,7 @@ module ForwardNorthSouth #(
     wire [PACKET_WIDTH-1:0] buffer_out;    
     wire buffer_full, buffer_empty, ren;
     
-    wire wait_in, full;
+    wire wait_in, full, valid;
     assign wait_in = wait_from_routing | wait_from_local;
     assign full = full_from_routing | full_from_local;
     
@@ -92,6 +95,9 @@ module ForwardNorthSouth #(
     ) routing_buffer (
         .clk(clk),
         .rst(rst),
+
+        //.buffer_rst(buffer_rst),
+
         .wait_in(wait_in),
         .full_in(full),
         .din(merge_out),
@@ -99,6 +105,7 @@ module ForwardNorthSouth #(
         //.read_en(ren),
         .dout(buffer_out),
         .empty(buffer_empty),
+        .valid(valid),
         .full(buffer_full)
     );
 
@@ -118,6 +125,8 @@ module ForwardNorthSouth #(
         .ADD(ADD)
     ) PathDecoder2Way_tb (
         .din(buffer_out),
+        .empty(buffer_empty),
+        .valid(valid),
         
         .dout_routing(dout_routing),
         .dout_local(dout_local),

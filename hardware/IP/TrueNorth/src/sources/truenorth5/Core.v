@@ -117,6 +117,7 @@ module Core #(
     
     // Router -> Token Controller
     wire local_buffer_full;
+    wire buffer_rst;
     
 Scheduler #(
     .NUM_AXONS(NUM_AXONS),
@@ -179,6 +180,7 @@ TokenController #(
     .CSRAM_addr(CSRAM_addr),//to CSRAM
     .neuron_instruction(neuron_instruction), //to neuronblock
     .spike_out(router_spike),//to router
+    //.buffer_rst(buffer_rst),
     .neuron_reg_en(neuron_block_en), //to neuronblock
     .next_neuron(neuron_block_next_neuron),// to neuronblock
     .write_current_potential(neuron_block_write_current_potential)//to neuronblock
@@ -218,6 +220,7 @@ Router #(
 ) Router (
     .clk(clk),
     .rst(rst),
+    //.buffer_rst(buffer_rst),
     
     .din_local(CSRAM_data[PACKET_WIDTH-1:0]),
     .din_local_wen(router_spike),//from controller

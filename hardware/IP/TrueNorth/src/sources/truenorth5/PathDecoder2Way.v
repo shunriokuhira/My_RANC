@@ -24,6 +24,8 @@ module PathDecoder2Way#(
     parameter ADD = 1
 )(
     input [DATA_WIDTH-1:0] din,
+    input empty,
+    input valid,//入ってくるパケットが有効であるか
     output [DATA_WIDTH-1:0] dout_routing,
     output men_routing,
     output [DATA_WIDTH-1-(DY_MSB-(DY_LSB-1)):0] dout_local,
@@ -31,7 +33,17 @@ module PathDecoder2Way#(
 );
     wire din_zero;
     assign din_zero = (din == 0) ? 1 : 0;
-
+    // reg [DATA_WIDTH-1:0] din_before = 0;
+    // reg [DATA_WIDTH-1:0] din_before2 = 0;
+    // reg [DATA_WIDTH-1:0] din_before3 = 0;
+    // always @(negedge clk) begin
+    //     din_before <= din;
+    //     din_before2 <= din_before;
+    //     din_before3 <= din_before2;
+    // end
+    // wire read_twice;
+    // assign read_twice = (din == din_before) ? 1 : 0;//二連続でおんなじ値が入力された
+    //assign read_twice = 0;
     wire signed [DY_MSB:DY_LSB] dy;
     assign dy = din[DY_MSB:DY_LSB];
     
@@ -39,10 +51,10 @@ module PathDecoder2Way#(
     assign dy_plus_add = dy + ADD;
     
     assign dout_routing = {dy_plus_add, din[DY_LSB-1:0]};
-    assign men_routing = dy == 0 ? 0 : 1;
+    assign men_routing = !valid ? 0 : ((dy == 0) ? 0 : 1);
     
     assign dout_local = din[DY_LSB-1:0];
     //assign men_local = dy == 0 ? 1 : 0;
-    assign men_local = din_zero ? 0 : (dy == 0 ? 1 : 0);
+    assign men_local = !valid ? 0 : (dy == 0 ? 1 : 0);
 
 endmodule

@@ -58,7 +58,7 @@ always @(negedge clk) begin
                     wait_to_routing <= 0;
                     wait_to_local <= 1;
                     merge_out <= din_from_routing;
-                    merge_out <= 1;
+                    merge_wen <= 1;
                     state <= wait_routing;
                 end
             endcase
@@ -67,10 +67,16 @@ always @(negedge clk) begin
             wait_to_routing <= 0;
             wait_to_local <= 0;
             merge_out <= 0;
-            merge_out <= 0;
+            merge_wen <= 0;
             state <= wait_local;
         end
         
+    end
+    else begin
+            wait_to_routing <= 1;
+            wait_to_local <= 1;
+            merge_out <= 0;
+            merge_wen <= 0;
     end
 end
 

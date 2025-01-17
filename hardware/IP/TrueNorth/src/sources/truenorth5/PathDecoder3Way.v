@@ -27,6 +27,8 @@ module PathDecoder3Way#(
     parameter ADD = 1//eastなら-1
 )(
     input [DATA_WIDTH-1:0] din,
+    input empty,
+    input valid,
     output [DATA_WIDTH-1:0] dout_routing,
     output men_routing,
     output [DATA_WIDTH-1-(DX_MSB-DY_MSB):0] dout_north,
@@ -37,6 +39,18 @@ module PathDecoder3Way#(
     wire din_zero;
     assign din_zero = (din == 30'b0) ? 1 : 0;//バッファの初期値
 
+    // reg [DATA_WIDTH-1:0] din_before = 0;
+    // reg [DATA_WIDTH-1:0] din_before2 = 0;
+    // reg [DATA_WIDTH-1:0] din_before3 = 0;
+    // always @(negedge clk) begin
+    //     din_before <= din;
+    //     din_before2 <= din_before;
+    //     din_before3 <= din_before2;
+    // end
+    // wire read_twice;
+    // assign read_twice = (din == din_before) ? 1 : 0;//二連続でおんなじ値が入力された
+    //assign read_twice = 0;
+
     wire [DX_MSB:DX_LSB] dx;
     wire signed [DY_MSB:DY_LSB] dy;
     assign dx = din[DX_MSB:DX_LSB];
@@ -46,14 +60,14 @@ module PathDecoder3Way#(
     assign dx_plus_add = dx + ADD;
     
     assign dout_routing = {dx_plus_add, din[DX_LSB-1:0]};
-    assign men_routing = din_zero ? 0 : (dx == 0 ? 0 : 1);
+    assign men_routing = !valid ? 0 : (dx == 0 ? 0 : 1);
     
     //din_zero考慮しないとゼロパケットに反応してさいしょからmen_northが1のままになる
     assign dout_north = din[DX_LSB-1:0];
     //assign men_north = dy >= 0 ? (dx == 0 ? 1 : 0) : 0;
-    assign men_north = din_zero ? 0 : (dy >= 0 ? (dx == 0 ? 1 : 0) : 0);
+    assign men_north = !valid ? 0 : (dy >= 0 ? (dx == 0 ? 1 : 0) : 0);
 
     assign dout_south = din[DX_LSB-1:0];
-    assign men_south = din_zero ? 0 : (dy < 0 ? (dx == 0 ? 1 : 0) : 0);
+    assign men_south = !valid ? 0 : (dy < 0 ? (dx == 0 ? 1 : 0) : 0);
 
 endmodule

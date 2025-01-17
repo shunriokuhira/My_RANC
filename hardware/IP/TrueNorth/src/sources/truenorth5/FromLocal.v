@@ -16,6 +16,10 @@ module FromLocal #(
 )(
     input clk,
     input rst,
+
+
+    //input buffer_rst,
+
     input [PACKET_WIDTH-1:0] din,
     input din_wen,
     
@@ -47,6 +51,8 @@ module FromLocal #(
     ) buffer_east (
         .clk(clk),
         .rst(rst),
+        //.buffer_rst(buffer_rst),
+
         .wait_in(wait_local),
         .full_in(full_local),
         
@@ -55,6 +61,7 @@ module FromLocal #(
         //.read_en(ren),
         .dout(dout),
         .empty(buffer_empty),
+        .valid(valid),
         .full(local_buffer_full)
     );
     
@@ -69,15 +76,27 @@ module FromLocal #(
 
     wire din_zero;
     assign din_zero = (dout == 30'b0) ? 1 : 0;
-
+    reg [PACKET_WIDTH-1:0] din_before = 0;
+    reg [PACKET_WIDTH-1:0] din_before2 = 0;
+    reg [PACKET_WIDTH-1:0] din_before3 = 0;
+    // always @(negedge clk) begin//dinは立ち上がりで出力されるので、立下りでキャッチする
+    //     din_before <= din;
+    //     din_before2 <= din_before;
+    //     din_before3 <= din_before2;
+    // end
+    // wire read_twice;
+    //assign read_twice = (din == din_before) ? 1 : 0;//二連続でおんなじ値が入力された
+    //assign read_twice = 0;
+    wire valid;
     wire signed [DX_MSB:DX_LSB] dx;
     assign dx = dout[DX_MSB:DX_LSB];
     
     assign dout_east = dout;
     //assign men_east = dx < 0 ? 0 : 1; // if dx == 0 going east
-    assign men_east = din_zero ? 0 : ((dx > 0)||(dx == 0) ? 1 : 0);
+    assign men_east = (!valid) ? 0 : ((dx > 0)||(dx == 0) ? 1 : 0);
 
     assign dout_west = dout;
-    assign men_west = dx < 0 ? 1 : 0;
+    //assign men_west = dx < 0 ? 1 : 0;
+    assign men_west = (!valid) ? 0 : ((dx > 0)||(dx == 0) ? 0 : 1);
     
 endmodule

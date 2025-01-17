@@ -18,6 +18,9 @@ module Router #(
 )(
     input clk, // This is that tic-toc-clock boi
     input rst,
+
+    //input buffer_rst,
+
     input [PACKET_WIDTH-1:0] din_local,
     input din_local_wen,
     input [PACKET_WIDTH-1:0] din_west,
@@ -103,6 +106,8 @@ module Router #(
         .din(din_local),
         .din_wen(din_local_wen),
         
+       //.buffer_rst(buffer_rst),//add
+
         .full_east(full_east_to_local),
         .full_west(full_west_to_local),
         
@@ -130,6 +135,8 @@ module Router #(
     ) forward_east (
         .clk(clk),
         .rst(rst),
+
+        //.buffer_rst(buffer_rst),
     
         .din_routing(din_west),
         .din_token_controller(data_local_to_east),
@@ -174,6 +181,8 @@ module Router #(
     ) forward_west (
         .clk(clk),
         .rst(rst),
+
+        //.buffer_rst(buffer_rst),
     
         .din_routing(din_east),
         .din_token_controller(data_local_to_west),
@@ -216,6 +225,9 @@ module Router #(
     ) forward_north (
         .clk(clk),
         .rst(rst),
+
+        //.buffer_rst(buffer_rst),
+
         .din_routing(din_south),
         .din_east(data_east_to_north),
         .din_west(data_west_to_north),
@@ -256,6 +268,9 @@ module Router #(
     ) forward_south (
         .clk(clk),
         .rst(rst),
+
+       // .buffer_rst(buffer_rst),
+
         .din_routing(din_north),
         .din_east(data_east_to_south),
         .din_west(data_west_to_south),

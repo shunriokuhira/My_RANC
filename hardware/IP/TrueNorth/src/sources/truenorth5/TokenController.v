@@ -40,6 +40,7 @@ module TokenController #(
     output reg [$clog2(NUM_NEURONS)-1:0] CSRAM_addr,
     output reg [$clog2(NUM_WEIGHTS)-1:0] neuron_instruction, 
     output reg spike_out,
+    //output reg buffer_rst,
     output reg neuron_reg_en, 
     output reg next_neuron,
     output reg write_current_potential
@@ -68,6 +69,7 @@ module TokenController #(
         CSRAM_write <= 0;
         CSRAM_addr <= 0;
         spike_out <= 0;
+        //buffer_rst <= 0;
         neuron_instruction <= 0;
         $readmemb(FILENAME, neuron_instructions);//FILENAMEにはtc_xxx.memがはいる
     end
@@ -178,7 +180,7 @@ module TokenController #(
             とwrite_current_potentialをLow(0)に設定し、ニューロン・ブロックが残りの軸索のスパイクを積分するようにします。
             ※積分するときはnext_neuronとwrite_current_potentialをLow(0)に設定
 
-            多分、イメージなんだけどこのSPIKE_INていう状態はいっこのニューロンにたいする256個の軸索入力
+            多分、イメージだけどこのSPIKE_INていう状態はいっこのニューロンにたいする256個の軸索入力
             */
             SPIKE_IN: begin//state3
                 next_neuron <= 0;//ここが1だとNPの更新ができない．ループならないので
@@ -221,6 +223,7 @@ module TokenController #(
             */
             WRITE_CSRAM: begin//state4
                 neuron_reg_en <= 0;
+                //buffer_rst <= 1;
                 /*spike_in >> ニューロンブロック内にて，ニューロンがスパイクしたかどうか
                 ただ、spike_inそのものはスパイク信号というかはトグル波っぽい。ニューロンブロックから現在のニューロンの"状態"が送られて
                 きているという感じで、閾値に達してるなら状態ならずっと1、そうでないならずっと0という感じ。
@@ -253,6 +256,7 @@ module TokenController #(
             */
             NEURON_CHECK: begin//state5
                 spike_out <= 0;
+                //buffer_rst <= 0;
                 CSRAM_write <= 0;
                 if (CSRAM_addr == NUM_NEURONS - 1) begin
                    state <= CLR_SCHED;
