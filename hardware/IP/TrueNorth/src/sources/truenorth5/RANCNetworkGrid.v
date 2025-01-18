@@ -37,6 +37,7 @@ module RANCNetworkGrid #(
     input rst,
     input tick,
     input input_buffer_empty,
+    input input_buffer_valid,
     input [PACKET_WIDTH-1:0] packet_in,//30bit
     output [$clog2(NUM_OUTPUTS)-1:0] packet_out,//8bit
     output packet_out_valid,
@@ -138,7 +139,7 @@ module RANCNetworkGrid #(
                 .tick(tick),
                 .rst(rst),
                 
-                .men_in_west(curr_core == 0 ? !input_buffer_empty_r2 : (left_edge ? 1'b0 : men_east_bus[curr_core - 1])),
+                .men_in_west(curr_core == 0 ? input_buffer_valid : (left_edge ? 1'b0 : men_east_bus[curr_core - 1])),
                 .men_in_east(right_edge ? 1'b0 : men_west_bus[curr_core + 1]),
                 .men_in_north(top_edge ? 1'b0 : men_south_bus[curr_core + GRID_DIMENSION_X]),
                 .men_in_south(bottom_edge ? 1'b0 : men_north_bus[curr_core - GRID_DIMENSION_X]),
@@ -197,7 +198,7 @@ module RANCNetworkGrid #(
                 .clk(clk),
                 .rst(rst),
                 
-                .men_in_west(curr_core == 0 ? !input_buffer_empty_r2 : (left_edge ? 1'b0 : men_east_bus[curr_core - 1])),
+                .men_in_west(curr_core == 0 ? input_buffer_valid : (left_edge ? 1'b0 : men_east_bus[curr_core - 1])),
                 .men_in_east(right_edge ? 1'b0 : men_west_bus[curr_core + 1]),
                 .men_in_north(top_edge ? 1'b0 : men_south_bus[curr_core + GRID_DIMENSION_X]),
                 .men_in_south(bottom_edge ? 1'b0 : men_north_bus[curr_core - GRID_DIMENSION_X]),

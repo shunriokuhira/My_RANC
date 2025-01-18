@@ -83,7 +83,7 @@ module RANCNetwork #
 	wire packet_axi_to_buffer_valid;
 	wire ren_to_input_buffer;
 	wire buffer_empty, buffer_full;
-    wire wait_to_input_buffer, full_to_input_buffer;
+    wire wait_to_input_buffer, full_to_input_buffer, valid;
 
 	assign packet_axi_to_buffer = data[PACKET_WIDTH-1:0];
 	
@@ -139,7 +139,7 @@ module RANCNetwork #
         //.read_en(ren_to_input_buffer),
         .dout(packet_buffer_to_RANC),//output
         .empty(buffer_empty),//output
-        .valid(),
+        .valid(valid),
         .full(buffer_full)//output
     );
 
@@ -179,6 +179,7 @@ module RANCNetwork #
         .rst(rst),
         .tick(tick),//from testbench
         .input_buffer_empty(buffer_empty),//from buffer
+        .input_buffer_valid(valid),
         .packet_in(packet_buffer_to_RANC),//from buffer
         .packet_out(packet_out),//to testbench
         .packet_out_valid(packet_out_valid),//to testbench
