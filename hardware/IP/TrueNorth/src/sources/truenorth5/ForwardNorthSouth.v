@@ -125,6 +125,8 @@ module ForwardNorthSouth #(
         .ADD(ADD)
     ) PathDecoder2Way_tb (
         .din(buffer_out),
+        .clk(clk),
+        .rst(rst),
         .empty(buffer_empty),
         .valid(valid),
         

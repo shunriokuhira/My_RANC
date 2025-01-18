@@ -7,7 +7,7 @@
 // Reset is synchronous active high.
 //
 // NOTE: BUFFER_DEPTH has to be a power of 2 
-// (Don't forget 1 is also a power of 2 :-) ).
+// (Don't forget 1 is also a power of 2 :-) 
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -19,10 +19,8 @@ module buffer#(
     input rst,
     input wait_in,
     input full_in,
-    input [DATA_WIDTH-1:0] din,
-    input din_valid,
-    //input buffer_rst,
-    //input read_en,
+    input [DATA_WIDTH-1:0] din,//packet from merge
+    input din_valid,//write_en from merge
     output [DATA_WIDTH-1:0] dout,
     output empty,
     output reg valid,
@@ -31,49 +29,23 @@ module buffer#(
 
     localparam BUFFER_WIDTH = $clog2(BUFFER_DEPTH);
         
-
     reg [DATA_WIDTH-1:0] data [BUFFER_DEPTH-1:0];
     reg [BUFFER_WIDTH-1:0] read_pointer, write_pointer;
     reg [BUFFER_WIDTH:0] status_counter;
     reg [DATA_WIDTH-1:0] output_data;
-    reg [DATA_WIDTH-1:0] din_before;
-    reg [DATA_WIDTH-1:0] din_before2;
-    wire [DATA_WIDTH-1:0] buff_0, buff_1, buff_2, buff_3;
-    assign buff_0 = data[0];
-    assign buff_1 = data[1];
-    assign buff_2 = data[2];
-    assign buff_3 = data[3];
 
+    reg ff1, ff2;
+    wire ren, wen, empty_pos;
+    
+    assign ren = ~(empty | wait_in | full_in); 
+    assign wen = ~full & din_valid;
+    assign empty_pos = ff1 & !ff2;
+    
     assign empty = status_counter == 0;
     assign full = status_counter == BUFFER_DEPTH;
     assign dout = output_data;
 
-    wire din_zero;
-    assign din_zero = ((din == 0) && (din_before == 0)) ? 1 : 0;
-    //assign din_zero = (din == 0) ? 1 : 0;
-    wire write_twice;//バッファが同じパケットを二回連続して書き込もうとしたことを検知
-    wire write_triple;
-    assign write_twice = (din == din_before2) ? 1 : 0;
-    assign write_triple = ((din == din_before) && (din_before == din_before2)) ? 1 : 0;
-    always @(posedge clk) begin
-        if(rst)begin
-            din_before <= 0;
-            din_before2 <= 0;
-        end
-        // else if(din_valid)begin
-        //     din_before <= din;
-        // end
-        else begin
-            din_before <= din;
-            din_before2 <= din_before;
-        end
-    end
 
-    // always @(posedge clk) begin
-    //     if(buffer_rst)begin
-    //         output_data <= 0;
-    //     end
-    // end
     integer i;
     initial begin
         for (i = 0; i < BUFFER_DEPTH; i = i + 1)
@@ -84,13 +56,25 @@ module buffer#(
         output_data <= 0;
     end
 
-    
+    //PathDecoderへ渡す信号
     always @(posedge clk) begin
         if(rst)begin
             valid <= 0;
         end
         else begin
-            valid <= (!wait_in & !full_in & !empty & ren);
+            valid <= ren;
+        end
+    end
+
+    //emptyの立ち上がりを検出
+    always @(posedge clk) begin
+        if(rst)begin
+            ff1 <= 1'b0;
+            ff2 <= 1'b0;
+        end
+        else begin
+            ff1 <= empty;
+            ff2 <= ff1;
         end
     end
 
@@ -103,25 +87,18 @@ module buffer#(
             output_data <= 0;
         end
         else begin
-            //if (!full && din_valid && !write_twice) begin
-            if (!full && din_valid) begin
+            if (wen) begin// write
                 data[write_pointer] = din;
                 write_pointer = write_pointer + 1;
                 status_counter = status_counter + 1;
             end
-            if (!empty && !wait_in && !full_in && ren) begin
+            if (ren) begin// read
                 output_data = data[read_pointer];
-                //data[read_pointer] = 0;
                 read_pointer = read_pointer + 1;
                 status_counter = status_counter - 1;
             end
-            // if(write_twice || din_zero)begin
-            //     output_data <= 0;
-            // end
         end
     end
-    wire ren;
-    assign ren = empty ? 0 : 1; 
 
     // reg ren;
     // always @(posedge clk) begin

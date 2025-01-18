@@ -125,6 +125,8 @@ module ForwardEastWest #(
         .ADD(ADD)
     ) PathDecoder (
         .din(buffer_out),
+        .clk(clk),
+        .rst(rst),
         .empty(buffer_empty),
         .valid(valid),
 

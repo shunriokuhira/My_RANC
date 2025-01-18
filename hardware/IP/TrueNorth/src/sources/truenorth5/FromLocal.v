@@ -87,7 +87,27 @@ module FromLocal #(
     // wire read_twice;
     //assign read_twice = (din == din_before) ? 1 : 0;//二連続でおんなじ値が入力された
     //assign read_twice = 0;
+    reg valid_r = 0;
+    always @(posedge clk) begin
+        if(rst)begin
+            valid_r <= 0;
+        end
+        else begin
+            valid_r <= valid;
+        end
+    end
     wire valid;
+
+    reg empty_r = 0;
+    always @(posedge clk) begin
+        if(rst)begin
+            empty_r <= 0;
+        end
+        else begin
+            empty_r <= buffer_empty;
+        end
+    end
+
     wire signed [DX_MSB:DX_LSB] dx;
     assign dx = dout[DX_MSB:DX_LSB];
     

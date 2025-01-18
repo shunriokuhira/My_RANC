@@ -24,6 +24,8 @@ module PathDecoder2Way#(
     parameter ADD = 1
 )(
     input [DATA_WIDTH-1:0] din,
+    input clk,
+    input rst,
     input empty,
     input valid,//入ってくるパケットが有効であるか
     output [DATA_WIDTH-1:0] dout_routing,
@@ -44,6 +46,24 @@ module PathDecoder2Way#(
     // wire read_twice;
     // assign read_twice = (din == din_before) ? 1 : 0;//二連続でおんなじ値が入力された
     //assign read_twice = 0;
+    reg valid_r = 0;
+    always @(posedge clk) begin
+        if(rst)begin
+            valid_r <= 0;
+        end
+        else begin
+            valid_r <= valid;
+        end
+    end
+    reg empty_r = 0;
+    always @(posedge clk) begin
+        if(rst)begin
+            empty_r <= 0;
+        end
+        else begin
+            empty_r <= empty;
+        end
+    end
     wire signed [DY_MSB:DY_LSB] dy;
     assign dy = din[DY_MSB:DY_LSB];
     
