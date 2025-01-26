@@ -1,0 +1,181 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
+[*] Mon Jan 13 07:48:06 2025
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/shunri/ranc_project/RANC/hardware/IP/TrueNorth/src/simulations/tests_mnist_2/truenorth4/read_test.gtkw"
+[timestart] 2866234000
+[size] 1366 682
+[pos] -9 26
+*-19.000000 2836150002 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] test_RANCNetwork.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[3].
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[3].genblk1.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[3].genblk1.Core.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[3].genblk1.Core.Router.
+[sst_width] 276
+[signals_width] 299
+[sst_expanded] 1
+[sst_vpaned_height] 404
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.clk
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.tick
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.men_in_west
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.input_buffer_empty
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.input_buffer_empty_r2
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.din_west[29:0]
+@c00200
+-renGen
+@28
+test_RANCNetwork.RANCNetwork_tb.renGen.ren
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.wait_to_input_renGen
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.full_to_input_renGen
+@1401200
+-renGen
+@c00200
+-router
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.wait_out_west
+@1401200
+-router
+@800200
+-core0
+-FromLocal
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.din_local_wen
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.din_local[29:0]
+@800201
+-buffer
+@23
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.dout[29:0]
+@29
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.local_buffer_full
+@23
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.buffer_east.buff_0[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.buffer_east.buff_1[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.buffer_east.buff_2[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.buffer_east.buff_3[29:0]
+@1000201
+-buffer
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.men_east
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.men_west
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.full_east
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.from_local.full_west
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.data_local_to_east[29:0]
+@1000200
+-FromLocal
+@800200
+-ForwardEast
+-merge2
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.clk
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.din_routing[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.data_local_to_east[29:0]
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.men_from_local
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.men_from_routing
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.merge_out[29:0]
+@1000200
+-merge2
+@800200
+-buffer
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.buffer_out[29:0]
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.men_east_to_north
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.buffer_full
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.routing_buffer.buff_0[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.routing_buffer.buff_1[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.routing_buffer.buff_2[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.routing_buffer.buff_3[29:0]
+@1000200
+-buffer
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.full_from_north
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.full_to_routing
+@1000200
+-ForwardEast
+@800200
+-ForwardWest
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.clk
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.din_routing[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.din_token_controller[29:0]
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.men_from_local
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.men_from_routing
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.merge_out[29:0]
+@800200
+-buffer
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.buffer_out[29:0]
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.men_west_to_north
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.routing_buffer.buff_0[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.routing_buffer.buff_1[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.routing_buffer.buff_2[29:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.routing_buffer.buff_3[29:0]
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.buffer_full
+@1000200
+-buffer
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.wait_from_north
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_west.renGen.ren
+@1000200
+-ForwardWest
+@800200
+-ForwardNorth
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.din_routing[20:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.din_east[20:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.din_west[20:0]
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.men_from_routing
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.men_from_east
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.men_from_west
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.merge_out[20:0]
+@c00200
+-buffer
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.routing_buffer.clk
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.buffer_out[20:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.routing_buffer.buff_0[20:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.routing_buffer.buff_1[20:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.routing_buffer.buff_2[20:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_north.routing_buffer.buff_3[20:0]
+@1401200
+-buffer
+@1000200
+-ForwardNorth
+-core0
+@800200
+-core3
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[3].genblk1.Core.Router.data_north_to_local[11:0]
+@1000200
+-core3
+[pattern_trace] 1
+[pattern_trace] 0

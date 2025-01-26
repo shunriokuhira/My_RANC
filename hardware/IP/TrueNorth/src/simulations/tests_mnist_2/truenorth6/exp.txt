@@ -1,0 +1,5 @@
+merge_en付き
+renGenけした
+merge moduleは交互にWaitを出力ラウンドロビンすけじゅーる
+コントローラから定期的にスパイク送り、それ使ってmenリセットする
+full信号けした
