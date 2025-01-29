@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Wed Jan 29 02:40:25 2025
+[*] Wed Jan 29 14:11:40 2025
 [*]
 [dumpfile] "/home/shunri/ranc_project/RANC/hardware/IP/RANCNetwork/src/simulations/tests_mnist/test.vcd"
 [dumpfile_mtime] "Wed Jan 29 02:21:58 2025"
 [dumpfile_size] 93188096
 [savefile] "/home/shunri/ranc_project/RANC/hardware/IP/RANCNetwork/src/simulations/tests_mnist/128x128.gtkw"
-[timestart] 13679730000
+[timestart] 11493944120
 [size] 1366 682
 [pos] -256 24
-*-24.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.000000 11493980002 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] test_RANCNetwork.
 [treeopen] test_RANCNetwork.RANCNetwork_tb.
 [treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.
@@ -45,6 +45,7 @@
 [treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[22].genblk1.Core.
 [treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[23].genblk1.
 [treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[23].genblk1.Core.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[24].
 [treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[24].genblk1.
 [treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[24].genblk1.OutputBus.
 [treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[25].genblk1.
@@ -69,15 +70,18 @@
 [treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[9].genblk1.
 [treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[9].genblk1.Core.
 [sst_width] 276
-[signals_width] 158
+[signals_width] 190
 [sst_expanded] 1
 [sst_vpaned_height] 186
 @28
 test_RANCNetwork.clk
 test_RANCNetwork.tick
-@800200
--scope check
+@420
+test_RANCNetwork.RANCNetwork_tb.NUM_AXONS
+@421
+test_RANCNetwork.RANCNetwork_tb.NUM_NEURONS
 @c00200
+-scope check
 -core1
 @22
 test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[1].genblk1.Core.Router.dout_east[28:0]
@@ -380,20 +384,29 @@ test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[25].genblk1.Core.Ro
 test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[25].genblk1.Core.Router.dout_west[28:0]
 @1401200
 -core25
-@800201
+@800200
 -core30
-@23
+@22
 test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[30].genblk1.Core.Router.dout_east[28:0]
 test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[30].genblk1.Core.Router.dout_local[10:0]
 test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[30].genblk1.Core.Router.dout_north[19:0]
 test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[30].genblk1.Core.Router.dout_south[19:0]
-@29
+@28
 test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[30].genblk1.Core.Router.dout_wen_local
-@23
+@22
 test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[30].genblk1.Core.Router.dout_west[28:0]
-@1000201
--core30
 @1000200
+-core30
+@1401200
 -scope check
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[24].genblk1.OutputBus.Router_tb.dout_local[10:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[24].genblk1.OutputBus.Router_tb.dout_north[19:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[24].genblk1.OutputBus.Router_tb.dout_south[19:0]
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[24].genblk1.OutputBus.Router_tb.dout_wen_local
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[24].genblk1.OutputBus.Router_tb.dout_west[28:0]
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[24].genblk1.OutputBus.Router_tb.dout_east[28:0]
 [pattern_trace] 1
 [pattern_trace] 0

@@ -16,69 +16,135 @@ module Merge2#(
 );
 
 
+//merge_v4
+reg [1:0] state = 0; // 0: idle, 1: wait state
+localparam idle = 0, local_out = 1;
 
-
-//merge_v3
-reg[3:0] state = 1;
-localparam wait_routing = 0, wait_local = 1;
 always @(negedge clk) begin
     if(rst)begin
         merge_out <= 0;
         merge_wen <= 0;
-        wait_to_local <= 0;
         wait_to_routing <= 0;
-        state <= wait_local;
+        wait_to_local <= 0;
+        state <= 0;
     end
     else if(!full)begin
-        if(men_from_routing & !men_from_local)begin//routing側だけからリクエストがきたとき
-            merge_out <= din_from_routing;
-            merge_wen <= 1;
-            wait_to_routing <= 0;
-            wait_to_local <= 0;
-            state <= wait_routing;
-        end
-        else if(!men_from_routing & men_from_local)begin//local側だけからリクエストきたとき
-            merge_out <= din_from_local;
-            merge_wen <= 1;
-            wait_to_routing <= 0;
-            wait_to_local <= 0;
-            state <= wait_local;
-        end
-        else if(men_from_routing & men_from_local)begin//競合したとき
-            case(state)
-                wait_routing:begin
-                    wait_to_routing <= 1;
-                    wait_to_local <= 0;
-                    merge_out <= din_from_local;
+        case (state)
+            idle: begin
+                // Idle state: check enable signals and prioritize data_a
+                if (men_from_routing & men_from_local) begin//2つ同時に競合を検知
+                    merge_out <= din_from_routing; // いったんrouting側を出力
                     merge_wen <= 1;
-                    state <= wait_local;
-                end
+                    state <= local_out;
 
-                wait_local:begin
-                    wait_to_routing <= 0;
+                    wait_to_routing <= 1;
                     wait_to_local <= 1;
+                end
+                else if(men_from_routing & !men_from_local)begin//routingのみ
                     merge_out <= din_from_routing;
                     merge_wen <= 1;
-                    state <= wait_routing;
+                    state <= idle;
+
+                    wait_to_routing <= 0;
+                    wait_to_local <= 0;
+                end 
+                else if(!men_from_routing & men_from_local)begin//localのみ
+                    merge_out <= din_from_local;//
+                    merge_wen <= 1;
+                    state <= idle;//
+
+                    wait_to_routing <= 0;
+                    wait_to_local <= 0;
                 end
-            endcase
-        end
-        else begin
-            wait_to_routing <= 0;
-            wait_to_local <= 0;
-            merge_out <= 0;
-            merge_wen <= 0;
-            state <= wait_local;
-        end
-        
+                else begin
+                    merge_out <= 0;
+                    merge_wen <= 0;
+                    state <= idle;
+                    wait_to_routing <= 1'b0;
+                    wait_to_local <= 1'b0; // Clear wait signal otherwise
+                end
+            end
+            local_out: begin
+                // Wait state: process data_b if flagged
+                merge_out <= din_from_local;
+                merge_wen <= 1;
+                state <= idle; // Return to idle state
+                wait_to_routing <= 1'b0; // Clear wait signal otherwise
+                wait_to_local <= 1'b0;
+            end
+        endcase
     end
     else begin
-            wait_to_routing <= 1;
-            wait_to_local <= 1;
-            merge_out <= 0;
-            merge_wen <= 0;
+        merge_out <= merge_out;
+        merge_wen <= 0;
+        wait_to_routing <= 0;
+        wait_to_local <= 0;
+        state <= idle;
     end
+    
 end
+
+//merge_v3
+// reg[3:0] state = 1;
+// localparam wait_routing = 0, wait_local = 1;
+// always @(negedge clk) begin
+//     if(rst)begin
+//         merge_out <= 0;
+//         merge_wen <= 0;
+//         wait_to_local <= 0;
+//         wait_to_routing <= 0;
+//         state <= wait_local;
+//     end
+//     else if(!full)begin
+//         if(men_from_routing & !men_from_local)begin//routing側だけからリクエストがきたとき
+//             merge_out <= din_from_routing;
+//             merge_wen <= 1;
+//             wait_to_routing <= 0;
+//             wait_to_local <= 0;
+//             state <= wait_routing;
+//         end
+//         else if(!men_from_routing & men_from_local)begin//local側だけからリクエストきたとき
+//             merge_out <= din_from_local;
+//             merge_wen <= 1;
+//             wait_to_routing <= 0;
+//             wait_to_local <= 0;
+//             state <= wait_local;
+//         end
+//         else if(men_from_routing & men_from_local)begin//競合したとき
+//             case(state)
+//                 wait_routing:begin
+//                     wait_to_routing <= 1;
+//                     wait_to_local <= 0;
+//                     merge_out <= din_from_local;
+//                     merge_wen <= 1;
+//                     state <= wait_local;
+//                 end
+
+//                 wait_local:begin
+//                     wait_to_routing <= 0;
+//                     wait_to_local <= 1;
+//                     merge_out <= din_from_routing;
+//                     merge_wen <= 1;
+//                     state <= wait_routing;
+//                 end
+//             endcase
+//         end
+//         else begin
+//             wait_to_routing <= 0;
+//             wait_to_local <= 0;
+//             merge_out <= 0;
+//             merge_wen <= 0;
+//             state <= wait_local;
+//         end
+        
+//     end
+//     else begin
+//             wait_to_routing <= 1;
+//             wait_to_local <= 1;
+//             merge_out <= 0;
+//             merge_wen <= 0;
+//     end
+// end
 
 
 
