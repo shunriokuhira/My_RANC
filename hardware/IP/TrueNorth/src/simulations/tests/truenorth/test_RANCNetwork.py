@@ -13,8 +13,8 @@ def peek_line(f):
 
 
 # Constants across all tests すべてのテストに共通する定数
-#TICK_PERIOD_NS = 1400000
-TICK_PERIOD_NS = 140
+TICK_PERIOD_NS = 1400000
+#TICK_PERIOD_NS = 140
 DEBUG = True
 
 #TestRANCNetworkクラスがunittest.TestCaseクラスを継承
@@ -152,12 +152,12 @@ class TestRANCNetwork(unittest.TestCase):
         dy_lsb = 12
         input_buffer_depth = 512
         router_buffer_depth = 4
-        memory_filepath = "../memory_files/vmm/"
+        memory_filepath = "../../memory_files/vmm/"
         maximum_number_of_packets = 400
         c_s00_axis_tdata_width = 32
-        num_inputs_filepath = '../memory_files/vmm/tb_num_inputs.txt'
-        input_filepath = '../memory_files/vmm/tb_input.txt'
-        correct_filepath = '../memory_files/vmm/tb_correct.txt'
+        num_inputs_filepath = '../../memory_files/vmm/tb_num_inputs.txt'
+        input_filepath = '../../memory_files/vmm/tb_input.txt'
+        correct_filepath = '../../memory_files/vmm/tb_correct.txt'
 
         # Opening the files that are to be used in the initial block of the test
         num_inputs_file = open(num_inputs_filepath, 'r')

@@ -1,0 +1,29 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
+[*] Wed Jan 29 01:07:23 2025
+[*]
+[dumpfile] "/home/shunri/ranc_project/RANC/hardware/IP/RANCNetwork/src/simulations/tests_mnist/test.vcd"
+[dumpfile_mtime] "Tue Jan 28 08:13:09 2025"
+[dumpfile_size] 395714560
+[savefile] "/home/shunri/ranc_project/RANC/hardware/IP/RANCNetwork/src/simulations/tests_mnist/512x512.gtkw"
+[timestart] 36710000000
+[size] 1366 682
+[pos] -225 26
+*-29.000000 8000000003 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] test_RANCNetwork.
+[sst_width] 276
+[signals_width] 175
+[sst_expanded] 1
+[sst_vpaned_height] 186
+@28
+test_RANCNetwork.clk
+test_RANCNetwork.tick
+@420
+test_RANCNetwork.RANCNetwork_tb.NUM_AXONS
+test_RANCNetwork.RANCNetwork_tb.NUM_NEURONS
+@22
+test_RANCNetwork.RANCNetwork_tb.packet_out[8:0]
+@29
+test_RANCNetwork.RANCNetwork_tb.packet_out_valid
+[pattern_trace] 1
+[pattern_trace] 0

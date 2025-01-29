@@ -128,8 +128,11 @@ class TestRANCNetwork(unittest.TestCase):
         # num_axons = 512
         # num_neurons = 128
 
-        num_axons = 256
-        num_neurons = 256
+        # num_axons = 256
+        # num_neurons = 256
+
+        num_axons = 128
+        num_neurons = 128
 
         # num_axons = 512
         # num_neurons = 512

@@ -1,0 +1,29 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
+[*] Wed Jan 29 01:06:45 2025
+[*]
+[dumpfile] "/home/shunri/ranc_project/RANC/hardware/IP/TrueNorth/src/simulations/tests_mnist_2/truenorth6/test.vcd"
+[dumpfile_mtime] "Wed Jan 29 01:06:45 2025"
+[dumpfile_size] 25358336
+[savefile] "/home/shunri/ranc_project/RANC/hardware/IP/TrueNorth/src/simulations/tests_mnist_2/truenorth6/512x512.gtkw"
+[timestart] 37668000000
+[size] 1366 682
+[pos] -54 26
+*-29.000000 37171020002 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] test_RANCNetwork.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.
+[sst_width] 276
+[signals_width] 198
+[sst_expanded] 1
+[sst_vpaned_height] 186
+@28
+test_RANCNetwork.clk
+test_RANCNetwork.tick
+@420
+test_RANCNetwork.RANCNetwork_tb.NUM_AXONS
+test_RANCNetwork.RANCNetwork_tb.NUM_NEURONS
+@23
+test_RANCNetwork.RANCNetwork_tb.packet_out[8:0]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -127,8 +127,15 @@ class TestRANCNetwork(unittest.TestCase):
         """Comparing 10 MNIST images with simulator"""
         # num_axons = 512
         # num_neurons = 128
-        num_axons = 256
-        num_neurons = 256
+
+        num_axons = 128
+        num_neurons = 128
+
+        # num_axons = 256
+        # num_neurons = 256
+
+        # num_axons = 512
+        # num_neurons = 512
 
         # Parameters for this particular test
         if num_axons == 512 and num_neurons == 128:

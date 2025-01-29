@@ -4,7 +4,7 @@ from collections import namedtuple
 from myhdl import Cosimulation
 
 #cmdはテンプレート文字列として機能し、実行時に値を埋め込んでシステムコマンドとして実行
-cmd = ('iverilog -o RANCNetwork.o -I ../../sources -Dgrid_dimension_x=%s '
+cmd = ('iverilog -o RANCNetwork.o -I truenorth_src -Dgrid_dimension_x=%s '
        '-Dgrid_dimension_y=%s -Doutput_core_x_coordinate=%s '
        '-Doutput_core_y_coordinate=%s -Dnum_outputs=%s -Dnum_neurons=%s '
        '-Dnum_axons=%s -Dnum_ticks=%s -Dnum_weights=%s -Dnum_reset_modes=%s '
@@ -13,7 +13,7 @@ cmd = ('iverilog -o RANCNetwork.o -I ../../sources -Dgrid_dimension_x=%s '
        '-Dinput_buffer_depth=%s -Drouter_buffer_depth=%s '
        '-Dmemory_filepath=\\"%s\\" -Dmaximum_number_of_packets=%s '
        '-Dc_s00_axis_tdata_width=%s -s test_RANCNetwork '
-       '../../sources/*.v test_RANCNetwork.v')
+       'truenorth_src/*.v test_RANCNetwork.v')
 
 
 InputPorts = namedtuple('input_ports', 'clk, rst, tick, s00_axis_aclk,'
@@ -63,5 +63,5 @@ def RANCNetwork(input_ports, output_ports, params):
                      params.maximum_number_of_packets,
                      params.c_s00_axis_tdata_width))
 
-    return Cosimulation("vvp -m ../iverilog/myhdl.vpi RANCNetwork.o",
+    return Cosimulation("vvp -m ../../iverilog/myhdl.vpi RANCNetwork.o",
                         **input_ports._asdict(), **output_ports._asdict())

@@ -1,0 +1,47 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
+[*] Wed Jan 29 01:06:18 2025
+[*]
+[dumpfile] "/home/shunri/ranc_project/RANC/hardware/IP/RANCNetwork/src/simulations/tests_mnist/test.vcd"
+[dumpfile_mtime] "Tue Jan 28 08:13:09 2025"
+[dumpfile_size] 395714560
+[savefile] "/home/shunri/ranc_project/RANC/hardware/IP/RANCNetwork/src/simulations/tests_mnist/512x128.gtkw"
+[timestart] 22712007600
+[size] 1366 682
+[pos] -1 -1
+*-15.000000 33223500002 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] test_RANCNetwork.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.forward_east.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[4].
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[4].genblk1.
+[treeopen] test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[4].genblk1.OutputBus.
+[sst_width] 276
+[signals_width] 150
+[sst_expanded] 1
+[sst_vpaned_height] 186
+@28
+test_RANCNetwork.clk
+test_RANCNetwork.tick
+@420
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[4].genblk1.OutputBus.NUM_AXONS
+@421
+test_RANCNetwork.RANCNetwork_tb.NUM_NEURONS
+@800200
+-core0
+@28
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[0].genblk1.Core.Router.din_local_wen
+@800200
+-ForwardEast
+@1000200
+-ForwardEast
+-core0
+@22
+test_RANCNetwork.RANCNetwork_tb.RANCNetworkGrid_inst.gencore[4].genblk1.OutputBus.packet_out[6:0]
+[pattern_trace] 1
+[pattern_trace] 0

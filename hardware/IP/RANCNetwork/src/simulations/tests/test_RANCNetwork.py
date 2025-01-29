@@ -13,8 +13,8 @@ def peek_line(f):
 
 
 # Constants across all tests すべてのテストに共通する定数
-#TICK_PERIOD_NS = 1400000
-TICK_PERIOD_NS = 140
+TICK_PERIOD_NS = 1400000
+# TICK_PERIOD_NS = 140
 DEBUG = True
 
 #TestRANCNetworkクラスがunittest.TestCaseクラスを継承
