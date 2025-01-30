@@ -77,8 +77,8 @@ always @(negedge clk) begin
     else begin
         merge_out <= merge_out;
         merge_wen <= 0;
-        wait_to_routing <= 0;
-        wait_to_local <= 0;
+        wait_to_routing <= 1;
+        wait_to_local <= 1;
         state <= idle;
     end
     
