@@ -21,7 +21,7 @@ module Scheduler #(
     input clr,
     input [$clog2(NUM_AXONS) + $clog2(NUM_TICKS) - 1:0] packet,//from router
     output [NUM_AXONS-1:0] axon_spikes,//to controller
-    output error
+    output error//to testbench
 );
     
     wire [$clog2(NUM_TICKS)-1:0] read_address;
@@ -29,8 +29,8 @@ module Scheduler #(
     wire read_equal_write_and_not_set;
     
     assign read_equal_write = read_address == (packet[3:0] + read_address + 1) ? 1'b1 : 1'b0;//(packet[3:0] + read_address + 1)はwrite_addressそのもの
-    assign read_equal_write_and_not_set = read_equal_write & ~set;
-    assign error = read_equal_write_and_not_set & wen;
+    assign read_equal_write_and_not_set = read_equal_write & ~set;//setが来てなくてreadとwriteが同じ値
+    assign error = read_equal_write_and_not_set & wen;//
     
     SchedulerSRAM #(
         .NUM_AXONS(NUM_AXONS),

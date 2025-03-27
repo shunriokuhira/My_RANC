@@ -33,12 +33,10 @@ module buffer#(
     reg [BUFFER_WIDTH:0] status_counter;
     reg [DATA_WIDTH-1:0] output_data;
 
-    reg ff1, ff2;
-    wire ren, wen, empty_pos;
+    wire ren, wen;
     
     assign ren = ~(empty | wait_in); 
     assign wen = ~full & din_valid;
-    assign empty_pos = ff1 & !ff2;
     
     assign empty = status_counter == 0;
     assign full = status_counter == BUFFER_DEPTH;
@@ -65,18 +63,6 @@ module buffer#(
         end
     end
 
-    //emptyの立ち上がりを検出
-    always @(posedge clk) begin
-        if(rst)begin
-            ff1 <= 1'b0;
-            ff2 <= 1'b0;
-        end
-        else begin
-            ff1 <= empty;
-            ff2 <= ff1;
-        end
-    end
-
     always@(posedge clk) begin
         if (rst) begin
             data[0] <= 0;
@@ -99,17 +85,41 @@ module buffer#(
         end
     end
 
-    // reg ren;
-    // always @(posedge clk) begin
-    //     if(rst)begin
-    //         ren <= 0;
-    //     end
-    //     else if(!empty)begin
-    //         ren <= 1;
+
+//---------BUFFER_DEPTH == 1 ↓↓ -------
+    // reg [DATA_WIDTH-1:0] data;
+    // reg status_counter;
+    // reg [DATA_WIDTH-1:0] output_data;
+            
+    // assign empty = status_counter == 0;
+    // assign full = status_counter == BUFFER_DEPTH;
+    // assign dout = output_data;
+
+    // integer i;
+    // initial begin
+    //     data <= 0;
+    //     status_counter <= 0;
+    //     output_data <= 0;
+    // end
+
+
+    // always@(posedge clk) begin
+    //     if (rst) begin
+    //         data <= 0;
+    //         status_counter <= 0;
+    //         output_data <= 0;
     //     end
     //     else begin
-    //         ren <= 0;
+    //         if (wen) begin
+    //             data = din;
+    //             status_counter = status_counter + 1;
+    //         end
+    //         if (ren) begin
+    //             output_data = data;
+    //             status_counter = status_counter - 1;
+    //         end
     //     end
     // end
+
 
 endmodule

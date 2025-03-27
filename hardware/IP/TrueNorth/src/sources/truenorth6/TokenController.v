@@ -166,9 +166,9 @@ module TokenController #(
                     neuron_instruction <= neuron_instructions[row_count];//ニューロンブロック内MUXにて重みが選ばれる
                 else
                     write_current_potential <= 1;//ニューロンブロックのレジスタにニューロンの現在の電位を書き込む?
-                next_neuron <= 1;//next_neuron を high に設定 >> neuronblock側でcurrent_potential(現在電位)を選択
+                next_neuron <= 1;//このステートのながでここの行が一番重要だと思う．next_neuron を high に設定 >> neuronblock側でcurrent_potential(現在電位)を選択
                 state <= SPIKE_IN;
-                neuron_reg_en <= 1;
+                neuron_reg_en <= 1;//neuronblock内のレジスタに書き込み許可
             end
             
 

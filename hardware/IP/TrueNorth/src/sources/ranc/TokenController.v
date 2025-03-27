@@ -163,7 +163,7 @@ module TokenController #(
                 if (axon_spikes[row_count] && synapses[row_count])//row_countは現在分析中の軸索
                     neuron_instruction <= neuron_instructions[row_count];//ニューロンブロック内MUXにて重みが選ばれる
                 else
-                    write_current_potential <= 1;//ニューロンブロックのレジスタにニューロンの現在の電位を書き込む?
+                    write_current_potential <= 1;//ニューロンブロックのレジスタにニューロンの現在の電位を書き込む? 初期値は0
                 next_neuron <= 1;//next_neuron を high に設定 >> neuronblock側でcurrent_potential(現在電位)を選択
                 state <= SPIKE_IN;
                 neuron_reg_en <= 1;

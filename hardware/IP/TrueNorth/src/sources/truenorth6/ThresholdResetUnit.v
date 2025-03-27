@@ -24,7 +24,7 @@ module ThresholdResetUnit #(
 
     assign spike = potential_in >= positive_threshold;//電位が正閾値を上回ったらスパイク発射
 
-    // ニューロン電位が負の閾値より小さい
+    // ニューロン現在電位が負の閾値より小さいかどうか判定
     wire potential_in_lt_negative_threshold;
     assign potential_in_lt_negative_threshold = potential_in < negative_threshold;
     
@@ -33,13 +33,13 @@ module ThresholdResetUnit #(
 
     // If spike, reset to positive_reset_potential. Otherwise, if less than negative_threshold, reset to  negative_reset_potential. Otherwise keep current potential.
     /*spike = 1の場合、positive_reset_valueにリセットする。そうでない場合、potential_inがnegative_thresholdより
-    小さければnegative_reset_potentialにリセット。そうでなければ現在の電位を保つ。*/
+    小さければnegative_reset_potentialにリセット。そうでなければ現在の電位を保つ。このpotential_outはCSRAMに書き込む電位情報*/
     assign potential_out = spike ? positive_reset_value : potential_in_lt_negative_threshold ? negative_reset_value : potential_in;
 
-    always@(*) begin
+    always@(*) begin//reset_modeは文字通りリセットの仕様を最初にどうするかきめておくものでRANCが起動してる再中にここのstateが変化することはない
         case(reset_mode)
             // Hard reset
-            0: begin
+            0: begin//つねにここが選択されてる
                 positive_reset_value = reset_potential;//0
                 negative_reset_value = -reset_potential;//1
             end

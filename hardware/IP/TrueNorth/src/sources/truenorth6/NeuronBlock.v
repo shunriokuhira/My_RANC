@@ -67,7 +67,7 @@ module NeuronBlock #(
         .next_neuron(next_neuron),
         .integrator_reg_en(integrator_reg_en),
         .weight(weight),
-        .current_potential(current_potential),//current_potentialは更新されたりしない。何を表すものなのかよくわからない
+        .current_potential(current_potential),//
         .integrator_potential(integrator_potential)
     );
 
